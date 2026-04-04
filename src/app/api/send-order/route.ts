@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { generatePdf, OrderData } from '@/lib/pdf';
+import { saveOrder } from '@/lib/kv';
+import { StoredOrder } from '@/types/order-history';
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
@@ -85,7 +87,31 @@ export async function POST(request: NextRequest) {
       ],
     });
 
-    return NextResponse.json({ success: true });
+    // Save to order history (non-critical — email already sent)
+    const orderId = crypto.randomUUID();
+    const mfrLabel = data.manufacturer === 'marquis' ? 'Marquis' : 'Sundance';
+    const storedOrder: StoredOrder = {
+      id: orderId,
+      type: 'spa',
+      vendor: data.manufacturer,
+      status: 'submitted',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      poNumber: data.dealerInfo.poNumber,
+      orderDate: data.dealerInfo.orderDate,
+      orderedBy: data.dealerInfo.orderedBy,
+      description: `${mfrLabel} ${data.series} ${data.model}`,
+      total: data.total,
+      freight: data.freight,
+      orderData: data as unknown as Record<string, unknown>,
+    };
+    try {
+      await saveOrder(storedOrder);
+    } catch (kvError) {
+      console.error('Failed to save order to KV (email was sent):', kvError);
+    }
+
+    return NextResponse.json({ success: true, orderId });
   } catch (error) {
     console.error('Send order error:', error);
     const message = error instanceof Error ? error.message : 'Failed to send order';

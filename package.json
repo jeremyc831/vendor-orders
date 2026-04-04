@@ -12,6 +12,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@react-pdf/renderer": "^4.3.2",
     "@types/nodemailer": "^7.0.11",
+    "@vercel/kv": "^3.0.0",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
     "next": "16.2.2",

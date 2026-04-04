@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Manufacturer, DealerInfo } from '@/types/manufacturer';
 import { getSeriesForManufacturer, findSeries } from '@/data';
 import { defaultMarquisDealer, defaultSundanceDealer, DEFAULT_MARQUIS_FREIGHT, DEFAULT_SUNDANCE_FREIGHT } from '@/data/dealer';
 import { calculateLineItemTotal, calculateOrderTotal, isOptionAvailable, isStepAvailable, getDefaultOptions, getDefaultCoverId, generatePO, formatCurrency } from '@/lib/pricing';
 import { OrderLineItem } from '@/types/order';
+import { StoredOrder } from '@/types/order-history';
+import OrderHistory from '@/components/OrderHistory';
 
 export default function OrderPage() {
   const [manufacturer, setManufacturer] = useState<Manufacturer | null>(null);
@@ -44,6 +46,27 @@ export default function OrderPage() {
   } | null>(null);
   const [noOptions, setNoOptions] = useState(false);
   const [noSteps, setNoSteps] = useState(false);
+  const [orders, setOrders] = useState<StoredOrder[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+
+  const fetchOrders = useCallback(async () => {
+    try {
+      setOrdersLoading(true);
+      const res = await fetch('/api/orders');
+      if (res.ok) {
+        const data = await res.json();
+        setOrders(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch orders:', err);
+    } finally {
+      setOrdersLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   const seriesList = manufacturer ? getSeriesForManufacturer(manufacturer) : [];
   const currentSeries = manufacturer && selectedSeriesId ? findSeries(manufacturer, selectedSeriesId) : null;
@@ -239,7 +262,8 @@ export default function OrderPage() {
     setSubmittedOrder(null);
     setNoOptions(false);
     setNoSteps(false);
-  }, []);
+    fetchOrders();
+  }, [fetchOrders]);
 
   // Check which steps have color options among selected steps
   const stepsWithColors = currentSeries?.steps.filter(
@@ -376,9 +400,9 @@ export default function OrderPage() {
         )}
 
         {!submittedOrder && (<>
-        {/* Manufacturer Selection */}
+        {/* Vendor Selection */}
         <section>
-          <h2 className="text-lg font-semibold text-white mb-4">Select Manufacturer</h2>
+          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Spas</h3>
           <div className="grid grid-cols-2 gap-4">
             {(['marquis', 'sundance'] as Manufacturer[]).map(m => (
               <button
@@ -404,6 +428,11 @@ export default function OrderPage() {
             ))}
           </div>
         </section>
+
+        {/* Order History - visible only on home screen */}
+        {!manufacturer && (
+          <OrderHistory orders={orders} loading={ordersLoading} />
+        )}
 
         {/* Dealer Info */}
         {manufacturer && (
