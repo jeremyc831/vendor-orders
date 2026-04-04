@@ -60,6 +60,7 @@ export function generatePdf(data: OrderData): Uint8Array {
     styles: { fontSize: 9, cellPadding: 2 },
     columnStyles: { 0: { fontStyle: 'bold', cellWidth: 35 } },
     body: [
+      ['PO #:', data.dealerInfo.poNumber],
       ['Dealer:', `${data.dealerInfo.dealerName} (#${data.dealerInfo.dealerNumber})`],
       ['Ordered By:', `${data.dealerInfo.orderedBy} (${data.dealerInfo.email})`],
       ['Ship To:', data.dealerInfo.shippingAddress],
@@ -107,6 +108,17 @@ export function generatePdf(data: OrderData): Uint8Array {
     doc.setFont('helvetica', 'normal');
     doc.text(data.notes, 14, afterConfig + 16, { maxWidth: pageWidth - 28 });
   }
+
+  // Confirmation notice
+  const afterNotes = data.notes
+    ? (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? 160
+    : (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? 140;
+  const noticeY = data.notes ? afterNotes + 26 : afterNotes + 12;
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Please send order confirmations to:', 14, noticeY);
+  doc.setFont('helvetica', 'normal');
+  doc.text('info@hibernation.com and jeremy@hibernation.com', 14, noticeY + 5);
 
   // Footer
   const pageHeight = doc.internal.pageSize.getHeight();
