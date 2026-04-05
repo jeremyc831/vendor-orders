@@ -6,6 +6,7 @@ export interface AccessoryProduct {
   category: string;
   unit?: string;      // e.g. "each", "case", "box"
   caseSize?: number;  // units per case/box — shown in product list with running total
+  isCustom?: boolean; // true for user-added products stored in KV
 }
 
 export interface AccessoryVendor {
