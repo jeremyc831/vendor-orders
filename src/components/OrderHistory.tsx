@@ -22,6 +22,8 @@ function vendorLabel(vendor: string): string {
   const labels: Record<string, string> = {
     marquis: 'Marquis',
     sundance: 'Sundance',
+    'marquis-accessories': 'Marquis Acc.',
+    'total-fireplace': 'Total Fireplace',
   };
   return labels[vendor] ?? vendor;
 }

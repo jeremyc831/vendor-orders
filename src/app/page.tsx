@@ -9,9 +9,13 @@ import { calculateLineItemTotal, calculateOrderTotal, isOptionAvailable, isStepA
 import { OrderLineItem } from '@/types/order';
 import { StoredOrder } from '@/types/order-history';
 import OrderHistory from '@/components/OrderHistory';
+import AccessoryOrderForm from '@/components/AccessoryOrderForm';
+import { accessoryVendors, findAccessoryVendor } from '@/data/accessories';
+import { AccessoryVendor } from '@/types/accessories';
 
 export default function OrderPage() {
   const [manufacturer, setManufacturer] = useState<Manufacturer | null>(null);
+  const [selectedAccessoryVendor, setSelectedAccessoryVendor] = useState<AccessoryVendor | null>(null);
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null);
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
   const [shellColorId, setShellColorId] = useState<string | null>(null);
@@ -249,6 +253,7 @@ export default function OrderPage() {
 
   const resetOrder = useCallback(() => {
     setManufacturer(null);
+    setSelectedAccessoryVendor(null);
     setSelectedSeriesId(null);
     setSelectedModelId(null);
     setShellColorId(null);
@@ -429,8 +434,39 @@ export default function OrderPage() {
           </div>
         </section>
 
+        {/* Supplies Vendor Buttons */}
+        {!manufacturer && !selectedAccessoryVendor && (
+          <section>
+            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Supplies &amp; Accessories</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {accessoryVendors.map(v => (
+                <button
+                  key={v.id}
+                  onClick={() => setSelectedAccessoryVendor(v)}
+                  className="p-6 rounded-lg border-2 border-card-border bg-card text-slate-300 hover:border-slate-500 transition text-center"
+                >
+                  <div className="text-2xl font-bold">{v.name}</div>
+                  <div className="text-sm text-slate-400 mt-1">
+                    {v.products.length} products
+                    {v.accountNumber && ` · Account #${v.accountNumber}`}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Accessories Order Form */}
+        {selectedAccessoryVendor && (
+          <AccessoryOrderForm
+            vendor={selectedAccessoryVendor}
+            onBack={resetOrder}
+            onOrderSent={resetOrder}
+          />
+        )}
+
         {/* Order History - visible only on home screen */}
-        {!manufacturer && (
+        {!manufacturer && !selectedAccessoryVendor && (
           <OrderHistory orders={orders} loading={ordersLoading} />
         )}
 
