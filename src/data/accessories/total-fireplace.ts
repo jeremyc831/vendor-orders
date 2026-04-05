@@ -7,9 +7,9 @@ export const totalFireplace: AccessoryVendor = {
   categories: ['Fire Starters', 'Fireplace Tools', 'Accessories'],
   products: [
     // Fire Starters
-    { id: 'tf-fatwood', name: 'Fatwood Fire Starter 25lb Box', sku: 'FS-FW25', price: 24.95, category: 'Fire Starters', unit: 'box' },
-    { id: 'tf-firestarter-sq', name: 'Fire Starter Squares 24ct', sku: 'FS-SQ24', price: 8.95, category: 'Fire Starters', unit: 'box' },
-    { id: 'tf-matches', name: 'Long Fireplace Matches', sku: 'FS-MTH', price: 6.95, category: 'Fire Starters', unit: 'box' },
+    { id: 'tf-fatwood', name: 'Fatwood Fire Starter 25lb Box', sku: 'FS-FW25', price: 24.95, category: 'Fire Starters', unit: 'case', caseSize: 4 },
+    { id: 'tf-firestarter-sq', name: 'Fire Starter Squares 24ct', sku: 'FS-SQ24', price: 8.95, category: 'Fire Starters', unit: 'case', caseSize: 12 },
+    { id: 'tf-matches', name: 'Long Fireplace Matches', sku: 'FS-MTH', price: 6.95, category: 'Fire Starters', unit: 'case', caseSize: 12 },
 
     // Fireplace Tools
     { id: 'tf-toolset-5pc', name: '5-Piece Fireplace Tool Set', sku: 'FT-5PC', price: 89.00, category: 'Fireplace Tools', unit: 'each' },

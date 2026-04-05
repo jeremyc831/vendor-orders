@@ -175,13 +175,23 @@ export default function AccessoryOrderForm({ vendor, onBack, onOrderSent }: Acce
               <div className="flex-1 min-w-0">
                 <div className="text-white font-medium">{product.name}</div>
                 <div className="text-xs text-slate-500">
-                  {product.sku && <span>{product.sku} · </span>}
-                  {product.unit && <span>{product.unit}</span>}
+                  {product.sku && <span>{product.sku}</span>}
+                  {product.caseSize && (
+                    <span>{product.sku ? ' · ' : ''}{product.caseSize} per case</span>
+                  )}
+                  {!product.caseSize && product.unit && (
+                    <span>{product.sku ? ' · ' : ''}{product.unit}</span>
+                  )}
                 </div>
+                {isSelected && product.caseSize && (
+                  <div className="text-xs text-amber-400 mt-0.5">
+                    {qty} {qty === 1 ? 'case' : 'cases'} = {qty * product.caseSize} units
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-4 shrink-0">
                 <span className={`font-mono text-sm ${isSelected ? 'text-amber-400' : 'text-brand-light'}`}>
-                  {formatCurrency(product.price)}
+                  {formatCurrency(product.price)}{product.caseSize ? '/case' : ''}
                 </span>
                 <div className="flex items-center gap-1">
                   <button

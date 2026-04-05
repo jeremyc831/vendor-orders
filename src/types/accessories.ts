@@ -4,7 +4,8 @@ export interface AccessoryProduct {
   sku?: string;
   price: number;
   category: string;
-  unit?: string;  // e.g. "each", "case", "box"
+  unit?: string;      // e.g. "each", "case", "box"
+  caseSize?: number;  // units per case/box — shown in product list with running total
 }
 
 export interface AccessoryVendor {
