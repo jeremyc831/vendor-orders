@@ -96,17 +96,14 @@ export default function AccessoryOrderForm({ vendor, onBack, onOrderSent }: Acce
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-white">{vendor.name} — Accessories Order</h2>
+      {/* Selected vendor badge */}
+      <div className="flex justify-center">
+        <div className="p-4 rounded-lg border-2 border-brand bg-brand/10 text-center inline-block">
+          <div className="text-2xl font-bold text-white">{vendor.name}</div>
           {vendor.accountNumber && (
-            <p className="text-sm text-slate-400">Account #{vendor.accountNumber}</p>
+            <div className="text-sm text-slate-400 mt-1">Account #{vendor.accountNumber}</div>
           )}
         </div>
-        <button onClick={onBack} className="text-sm text-slate-400 hover:text-white transition">
-          Cancel
-        </button>
       </div>
 
       {/* PO and Date */}

@@ -279,7 +279,7 @@ export default function OrderPage() {
     <div className="min-h-screen">
       {/* Header */}
       <header className="bg-card border-b border-card-border px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 cursor-pointer" onClick={resetOrder}>
           <Image src="/hibernation-logo.png" alt="Hibernation" width={48} height={48} className="rounded" />
           <div>
             <h1 className="text-xl font-bold text-white">The Order Desk</h1>
@@ -289,9 +289,12 @@ export default function OrderPage() {
         {(manufacturer || selectedAccessoryVendor || submittedOrder) && (
           <button
             onClick={resetOrder}
-            className="text-sm text-slate-400 hover:text-white transition"
+            className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition"
           >
-            New Order
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
           </button>
         )}
       </header>
@@ -405,8 +408,8 @@ export default function OrderPage() {
         )}
 
         {!submittedOrder && (<>
-        {/* Spa Vendor Selection */}
-        {!selectedAccessoryVendor && (
+        {/* Spa Vendor Selection — home screen */}
+        {!manufacturer && !selectedAccessoryVendor && (
           <section>
             <h2 className="text-lg font-semibold text-white mb-4">Order Spas</h2>
             <div className="grid grid-cols-2 gap-4">
@@ -414,11 +417,7 @@ export default function OrderPage() {
                 <button
                   key={m}
                   onClick={() => handleManufacturerSelect(m)}
-                  className={`p-6 rounded-lg border-2 transition text-center ${
-                    manufacturer === m
-                      ? 'border-brand bg-brand/10 text-white'
-                      : 'border-card-border bg-card text-slate-300 hover:border-slate-500'
-                  }`}
+                  className="p-6 rounded-lg border-2 border-card-border bg-card text-slate-300 hover:border-slate-500 transition text-center"
                 >
                   <Image
                     src={m === 'marquis' ? '/marquis-logo.png' : '/sundance-logo.png'}
@@ -436,7 +435,25 @@ export default function OrderPage() {
           </section>
         )}
 
-        {/* Supplies Vendor Buttons */}
+        {/* Selected spa vendor — shown centered once chosen */}
+        {manufacturer && (
+          <div className="flex justify-center">
+            <div className="p-4 rounded-lg border-2 border-brand bg-brand/10 text-center inline-block">
+              <Image
+                src={manufacturer === 'marquis' ? '/marquis-logo.png' : '/sundance-logo.png'}
+                alt={manufacturer === 'marquis' ? 'Marquis' : 'Sundance'}
+                width={200}
+                height={48}
+                className="h-12 w-auto mx-auto object-contain"
+              />
+              <div className="text-sm text-slate-400 mt-1">
+                Dealer #{manufacturer === 'marquis' ? '101099' : '1805'} &middot; Freight: {formatCurrency(freight)}/spa
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Supplies Vendor Selection — home screen */}
         {!manufacturer && !selectedAccessoryVendor && (
           <section>
             <h2 className="text-lg font-semibold text-white mb-4">Order Supplies</h2>
