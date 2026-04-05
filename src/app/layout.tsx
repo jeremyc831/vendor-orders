@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Spa Orders - Hibernation Stoves & Spas",
-  description: "Internal spa ordering system",
+  title: "The Order Desk - Hibernation Stoves & Spas",
+  description: "Internal ordering system",
 };
 
 export default function RootLayout({

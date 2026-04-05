@@ -282,11 +282,11 @@ export default function OrderPage() {
         <div className="flex items-center gap-4">
           <Image src="/hibernation-logo.png" alt="Hibernation" width={48} height={48} className="rounded" />
           <div>
-            <h1 className="text-xl font-bold text-white">Spa Orders</h1>
+            <h1 className="text-xl font-bold text-white">The Order Desk</h1>
             <p className="text-sm text-slate-400">Hibernation Stoves & Spas</p>
           </div>
         </div>
-        {(manufacturer || submittedOrder) && (
+        {(manufacturer || selectedAccessoryVendor || submittedOrder) && (
           <button
             onClick={resetOrder}
             className="text-sm text-slate-400 hover:text-white transition"
@@ -405,39 +405,41 @@ export default function OrderPage() {
         )}
 
         {!submittedOrder && (<>
-        {/* Vendor Selection */}
-        <section>
-          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Spas</h3>
-          <div className="grid grid-cols-2 gap-4">
-            {(['marquis', 'sundance'] as Manufacturer[]).map(m => (
-              <button
-                key={m}
-                onClick={() => handleManufacturerSelect(m)}
-                className={`p-6 rounded-lg border-2 transition text-center ${
-                  manufacturer === m
-                    ? 'border-brand bg-brand/10 text-white'
-                    : 'border-card-border bg-card text-slate-300 hover:border-slate-500'
-                }`}
-              >
-                <Image
-                  src={m === 'marquis' ? '/marquis-logo.png' : '/sundance-logo.png'}
-                  alt={m === 'marquis' ? 'Marquis' : 'Sundance'}
-                  width={200}
-                  height={48}
-                  className="h-12 w-auto mx-auto object-contain"
-                />
-                <div className="text-sm text-slate-400 mt-1">
-                  Dealer #{m === 'marquis' ? '101099' : '1805'} &middot; Default freight: {formatCurrency(m === 'marquis' ? DEFAULT_MARQUIS_FREIGHT : DEFAULT_SUNDANCE_FREIGHT)}/spa
-                </div>
-              </button>
-            ))}
-          </div>
-        </section>
+        {/* Spa Vendor Selection */}
+        {!selectedAccessoryVendor && (
+          <section>
+            <h2 className="text-lg font-semibold text-white mb-4">Order Spas</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {(['marquis', 'sundance'] as Manufacturer[]).map(m => (
+                <button
+                  key={m}
+                  onClick={() => handleManufacturerSelect(m)}
+                  className={`p-6 rounded-lg border-2 transition text-center ${
+                    manufacturer === m
+                      ? 'border-brand bg-brand/10 text-white'
+                      : 'border-card-border bg-card text-slate-300 hover:border-slate-500'
+                  }`}
+                >
+                  <Image
+                    src={m === 'marquis' ? '/marquis-logo.png' : '/sundance-logo.png'}
+                    alt={m === 'marquis' ? 'Marquis' : 'Sundance'}
+                    width={200}
+                    height={48}
+                    className="h-12 w-auto mx-auto object-contain"
+                  />
+                  <div className="text-sm text-slate-400 mt-1">
+                    Dealer #{m === 'marquis' ? '101099' : '1805'} &middot; Default freight: {formatCurrency(m === 'marquis' ? DEFAULT_MARQUIS_FREIGHT : DEFAULT_SUNDANCE_FREIGHT)}/spa
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Supplies Vendor Buttons */}
         {!manufacturer && !selectedAccessoryVendor && (
           <section>
-            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Supplies &amp; Accessories</h3>
+            <h2 className="text-lg font-semibold text-white mb-4">Order Supplies</h2>
             <div className="grid grid-cols-2 gap-4">
               {accessoryVendors.map(v => (
                 <button
