@@ -30,10 +30,14 @@ export interface AccessoryProduct {
   sourceUrl?: string;                // link back to the vendor's product page
 
   // --- Pricing model ---
-  retailSource?: number;             // vendor's public retail (reference for markup decisions)
-  wholesale?: number;                // Jeremy's actual cost from spreadsheet (when known)
-  shippingPct?: number;              // estimated shipping markup % (defaults applied in UI)
-  // storeRetail is computed: round((wholesale * (1 + shippingPct/100)) * 2)
+  // wholesale = what we pay the vendor per order unit (matches `price` when set).
+  // shippingPct = estimated shipping as a % of wholesale (e.g. 8 = light tier, 16 = heavy).
+  // storeRetail = Jeremy's customer-facing price. Formula: round(wholesale * (2 + shippingPct/100)).
+  // retailSource = vendor's public-facing retail (when known) — reference only, not used in ordering.
+  wholesale?: number;
+  shippingPct?: number;
+  storeRetail?: number;              // computed at import time from wholesale + shippingPct
+  retailSource?: number;             // vendor's own retail price (optional; not all vendors publish one)
 
   // --- Variants (optional) ---
   variants?: AccessoryVariant[];

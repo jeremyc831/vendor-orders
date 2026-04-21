@@ -25,10 +25,27 @@ from PIL import Image
 from pypdf import PdfReader
 
 ROOT = Path(__file__).resolve().parent.parent
-PDF_PATH = ROOT / "docs" / "2026 Accessories Order Form Effective 3.31.2026_2.pdf"
 OUT_TS = ROOT / "src" / "data" / "accessories" / "marquis.ts"
 INTERMEDIATE_JSON = ROOT / ".scrape" / "marquis-parsed.json"
 IMG_DIR = ROOT / "public" / "marquis-imgs"
+
+
+def _find_pdf() -> Path:
+    """Find the Marquis PDF — supports both the clean name and the legacy name."""
+    candidates = [
+        ROOT / "docs" / "marquis-2026-accessories-catalog.pdf",
+        ROOT / "docs" / "2026 Accessories Order Form Effective 3.31.2026_2.pdf",
+    ]
+    for c in candidates:
+        if c.exists():
+            return c
+    raise SystemExit(
+        f"Marquis PDF not found. Looked in:\n"
+        + "\n".join(f"  - {c}" for c in candidates)
+    )
+
+
+PDF_PATH = _find_pdf()
 
 
 class Product(TypedDict, total=False):
