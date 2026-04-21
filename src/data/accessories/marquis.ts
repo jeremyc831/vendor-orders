@@ -106,8 +106,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'SooTHe - Calcim Increaser - 12 per case, refill for the balancing basics kit, easy dosing cap included.',
     },
     {
-      id: 'mq-23836-hot-tub-pipe-jet-cleaner-display-case',
-      name: 'Hot Tub Pipe & Jet Cleaner - Display case',
+      id: 'mq-23836-hot-tub-pipe-jet-cleaner',
+      name: 'Hot Tub Pipe & Jet Cleaner',
       sku: '23836',
       category: 'Spa Frog Balancers',
       price: 4.48,
@@ -118,8 +118,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Hot Tub Pipe & Jet Cleaner - Display case - 6 boxes, 12 packets per box for a total of 72 impulse buys for your customer to clean out debris and build up I their hot tub piping.',
     },
     {
-      id: 'mq-23837-hot-tub-pipe-jet-cleaner-tube-replacemen',
-      name: 'Hot Tub Pipe & Jet Cleaner - Tube replacement',
+      id: 'mq-23837-hot-tub-pipe-jet-cleaner',
+      name: 'Hot Tub Pipe & Jet Cleaner',
       sku: '23837',
       category: 'Spa Frog Balancers',
       price: 211.44,
@@ -147,8 +147,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Serene Bromine cartridge 150 gram - Refill cartridge for floating device or inline. (24/cs) Use with Spa Frog Test Strips',
     },
     {
-      id: 'mq-20015-serene-mineral-cartridge-in-line-system-',
-      name: 'Serene Mineral cartridge in line system or floating refill',
+      id: 'mq-20015-serene-mineral-cartridge',
+      name: 'Serene Mineral Cartridge',
       sku: '20015',
       brand: 'Serene',
       category: 'Spa Frog Serene Bromine',
@@ -162,7 +162,7 @@ export const marquisAccessories: AccessoryVendor = {
     },
     {
       id: 'mq-20016-serene-bromine-floating-sanitizer-system',
-      name: 'Serene Bromine Floating sanitizer system- 150 gram Bromine',
+      name: 'Serene Bromine Floating Sanitizer System',
       sku: '20016',
       brand: 'Spa Frog',
       category: 'Spa Frog Serene Bromine',
@@ -217,8 +217,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Serene Bromine inline refresh kit - 4/200 gram Bromine & 1 Mineral cartridge. Use w/Spa Frog Test Strips.',
     },
     {
-      id: 'mq-20097-spa-frog-eu-conditioning-cartridge-for-m',
-      name: 'Spa Frog EU Conditioning Cartridge for Marquis inline',
+      id: 'mq-20097-spa-frog-eu-conditioning-cartridge',
+      name: 'Spa Frog EU Conditioning Cartridge',
       sku: '20097',
       brand: 'Spa Frog',
       category: 'Spa Frog Serene Bromine',
@@ -243,8 +243,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'ATV Start Up Chemical Bucket - Test strips, pH Increaser,5lb shock oxidizer, 5lb chlorinating granules, pH & Alkalinity Decreaser, Water Clarifier, Metal and Stain Remover packaged in a pail for soaking filters.',
     },
     {
-      id: 'mq-20150-serene-kit-inline-one-month-start-up-wit',
-      name: 'Serene Kit Inline, One month Start-up with balancers',
+      id: 'mq-20150-serene-bromine-inline-start-up-kit',
+      name: 'Serene Bromine Inline Start-up Kit',
       sku: '20150',
       brand: 'Spa Frog',
       category: 'Spa Frog Serene Bromine',
@@ -256,8 +256,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Serene Kit Inline, One month Start-up with balancers - 1 200 Gr Bromine, 1 Mineral Cartridge, Spa Frog Test Strips, Oxidizer, pH increaser, Alkalinity increaser, pH & Alkalinity decreaser, in a vinyl bag.',
     },
     {
-      id: 'mq-20151-serene-bromine-floating-start-up',
-      name: 'Serene Bromine Floating Start-up',
+      id: 'mq-20151-serene-bromine-floating-start-up-kit',
+      name: 'Serene Bromine Floating Start-up Kit',
       sku: '20151',
       brand: 'Spa Frog',
       category: 'Spa Frog Serene Bromine',
@@ -269,8 +269,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Serene Bromine Floating Start-up - Contains Spa Frog start-up floating kit, Oxidizer, pH Increaser, Alkalinity Increaser, pH & Alkalinity Decreaser, Test Strips, in a vinyl plastic bag.',
     },
     {
-      id: 'mq-20198-serene-bromine-200-gram-cartridge-for-ma',
-      name: 'Serene Bromine 200 gram cartridge for Marquis inline system',
+      id: 'mq-20198-serene-bromine-200-gram-cartridge',
+      name: 'Serene Bromine 200 gram Cartridge',
       sku: '20198',
       brand: 'Spa Frog',
       category: 'Spa Frog Serene Bromine',
@@ -309,7 +309,7 @@ export const marquisAccessories: AccessoryVendor = {
     },
     {
       id: 'mq-20399-spa-frog-canadian-conditioning-cartridge',
-      name: 'Spa Frog Canadian Conditioning Cartridge for Marquis inline',
+      name: 'Spa Frog Canadian Conditioning Cartridge',
       sku: '20399',
       brand: 'Spa Frog',
       category: 'Spa Frog Serene Bromine',
@@ -323,7 +323,7 @@ export const marquisAccessories: AccessoryVendor = {
     },
     {
       id: 'mq-20691-spa-frog-eu-bromine-floating-sanitizer-s',
-      name: 'Spa Frog EU Bromine Floating Sanitizer System kit includes',
+      name: 'Spa Frog EU Bromine Floating Sanitizer System',
       sku: '20691',
       brand: 'Spa Frog',
       category: 'Spa Frog Serene Bromine',
@@ -336,8 +336,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Spa Frog EU Bromine Floating Sanitizer System kit includes 10 test strips and refillable floating cap.',
     },
     {
-      id: 'mq-24847-spa-frog-bromine-test-strips-50-test-str',
-      name: 'Spa Frog Bromine Test Strips - 50 test strips per bottle',
+      id: 'mq-24847-spa-frog-bromine-test-strips',
+      name: 'Spa Frog Bromine Test Strips',
       sku: '24847',
       brand: 'Spa Frog',
       category: 'Spa Frog Serene Bromine',
@@ -352,8 +352,8 @@ export const marquisAccessories: AccessoryVendor = {
 
     // ------------------ Spa Frog @ease Chlorine ------------------
     {
-      id: 'mq-20323-spa-frog-jump-start-effervescent-start-u',
-      name: 'Spa Frog Jump Start: Effervescent Start up package of',
+      id: 'mq-20323-spa-frog-jump-start',
+      name: 'Spa Frog Jump Start',
       sku: '20323',
       brand: 'Spa Frog',
       category: 'Spa Frog @ease Chlorine',
@@ -380,8 +380,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: '@ease Refresh Kit with SmartChlor™ inline - Contains 4 SmartChlor Inline, 1 mineral with: test strips, and JumpStart',
     },
     {
-      id: 'mq-20630-swim-spa-cartridges-that-treats-up-to-3-',
-      name: 'Swim Spa Cartridges that treats up to 3,000 gallons of',
+      id: 'mq-20630-ease-swim-spa-cartridge-kit',
+      name: '@ease Swim Spa Cartridge Kit',
       sku: '20630',
       brand: '@ease SmartChlor',
       category: 'Spa Frog @ease Chlorine',
@@ -422,8 +422,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: '@ease w/SmartChlor Inline cartridge kit - Includes one mineral and one SmartChlor cartridge, test strips (10 ct) and JumpStart packet',
     },
     {
-      id: 'mq-20683-ease-with-smartchlor-cartridge-refill-sl',
-      name: '@ease with SmartChlor cartridge refill- Slow erosion',
+      id: 'mq-20683-ease-smartchlor-cartridge-refill',
+      name: '@ease SmartChlor Cartridge Refill',
       sku: '20683',
       brand: '@ease SmartChlor',
       category: 'Spa Frog @ease Chlorine',
@@ -519,8 +519,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Bromine Feeder in Blue - Bromine feeder will hold brominating tablets for automatic dispensing. Quantity: Each',
     },
     {
-      id: 'mq-23802-marquis-ph-increaser-1-lb-raises-low-ph',
-      name: 'Marquis® pH Increaser-1 lb. Raises low pH',
+      id: 'mq-23802-marquis-ph-increaser-1-lb',
+      name: 'Marquis® pH Increaser-1 lb.',
       sku: '23802',
       brand: 'Marquis',
       category: 'Marquis Chemicals',
@@ -534,7 +534,7 @@ export const marquisAccessories: AccessoryVendor = {
     },
     {
       id: 'mq-23803-marquis-alkalinity-increaser-1lb',
-      name: 'Marquis® Alkalinity Increaser -1lb',
+      name: 'Marquis® Alkalinity Increaser -1lb.',
       sku: '23803',
       brand: 'Marquis',
       category: 'Marquis Chemicals',
@@ -547,8 +547,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Marquis® Alkalinity Increaser -1lb. Raise alkalinity to maintain a buffer and prevent pH bounce. Maintain alkalinity between 80-140 ppm.',
     },
     {
-      id: 'mq-23804-marquis-brominating-tablets-1-5lb-slow-e',
-      name: 'Marquis® Brominating Tablets 1.5lb.Slow erosion tablets',
+      id: 'mq-23804-marquis-brominating-tablets-1-5lb',
+      name: 'Marquis® Brominating Tablets 1.5lb.',
       sku: '23804',
       brand: 'Marquis',
       category: 'Marquis Chemicals',
@@ -562,7 +562,7 @@ export const marquisAccessories: AccessoryVendor = {
     },
     {
       id: 'mq-23810-marquis-non-chlorine-shock-oxidizer-2-2l',
-      name: 'Marquis Non-Chlorine Shock Oxidizer 2.2lb',
+      name: 'Marquis Non-Chlorine Shock Oxidizer 2.2lb.',
       sku: '23810',
       brand: 'Marquis',
       category: 'Marquis Chemicals',
@@ -576,7 +576,7 @@ export const marquisAccessories: AccessoryVendor = {
     },
     {
       id: 'mq-23811-marquis-non-chlorine-shock-oxidizer-5lb',
-      name: 'Marquis Non-Chlorine Shock Oxidizer 5lb',
+      name: 'Marquis Non-Chlorine Shock Oxidizer 5lb.',
       sku: '23811',
       brand: 'Marquis',
       category: 'Marquis Chemicals',
@@ -590,7 +590,7 @@ export const marquisAccessories: AccessoryVendor = {
     },
     {
       id: 'mq-23812-marquis-chlorinating-granules-5lb',
-      name: 'Marquis® Chlorinating Granules 5lb',
+      name: 'Marquis® Chlorinating Granules 5lb.',
       sku: '23812',
       brand: 'Marquis',
       category: 'Marquis Chemicals',
@@ -604,7 +604,7 @@ export const marquisAccessories: AccessoryVendor = {
     },
     {
       id: 'mq-23813-marquis-chlorinating-granules-2lb',
-      name: 'Marquis® Chlorinating Granules 2lb',
+      name: 'Marquis® Chlorinating Granules 2lb.',
       sku: '23813',
       brand: 'Marquis',
       category: 'Marquis Chemicals',
@@ -617,8 +617,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Marquis® Chlorinating Granules 2lb. Convenient mid-size for routine start-up or maintenance. Great sanitizer.',
     },
     {
-      id: 'mq-23814-marquis-ph-alkalinity-decreaser-1-25-lb-',
-      name: 'Marquis® pH & Alkalinity Decreaser 1.25 lb. A 2-in-1 product',
+      id: 'mq-23814-marquis-ph-alkalinity-decreaser-1-25-lb',
+      name: 'Marquis® pH & Alkalinity Decreaser 1.25 lb.',
       sku: '23814',
       brand: 'Marquis',
       category: 'Marquis Chemicals',
@@ -631,8 +631,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Marquis® pH & Alkalinity Decreaser 1.25 lb. A 2-in-1 product. When pH and Alkalinity are too high, build up may affect components.',
     },
     {
-      id: 'mq-23815-marquis-calcium-increaser-16-oz-reduces-',
-      name: 'Marquis® Calcium Increaser 16 oz. Reduces foaminess in the',
+      id: 'mq-23815-marquis-calcium-increaser-16-oz',
+      name: 'Marquis® Calcium Increaser 16 oz.',
       sku: '23815',
       brand: 'Marquis',
       category: 'Marquis Chemicals',
@@ -660,7 +660,7 @@ export const marquisAccessories: AccessoryVendor = {
     },
     {
       id: 'mq-23823-marquis-chlorinating-granules-1lb',
-      name: 'Marquis Chlorinating Granules 1lb',
+      name: 'Marquis Chlorinating Granules 1lb.',
       sku: '23823',
       brand: 'Marquis',
       category: 'Marquis Chemicals',
@@ -674,7 +674,7 @@ export const marquisAccessories: AccessoryVendor = {
     },
     {
       id: 'mq-23863-marquis-alkalinity-increaser-2lb',
-      name: 'Marquis® Alkalinity Increaser 2lb',
+      name: 'Marquis® Alkalinity Increaser 2lb.',
       sku: '23863',
       brand: 'Marquis',
       category: 'Marquis Chemicals',
@@ -689,8 +689,8 @@ export const marquisAccessories: AccessoryVendor = {
 
     // ------------------ Cleaners & Protectants ------------------
     {
-      id: 'mq-23806-marquis-naturally-clear-enzyme-32-oz-bot',
-      name: 'Marquis® Naturally Clear Enzyme 32 oz. bottle Emulsify and',
+      id: 'mq-23806-marquis-naturally-clear-enzyme-32-oz',
+      name: 'Marquis® Naturally Clear Enzyme 32 oz.',
       sku: '23806',
       brand: 'Marquis',
       category: 'Cleaners & Protectants',
@@ -704,7 +704,7 @@ export const marquisAccessories: AccessoryVendor = {
     },
     {
       id: 'mq-23807-marquis-spa-bright-all-purpose-cleaner-3',
-      name: 'Marquis Spa Bright All-Purpose Cleaner 32 oz. with Spray',
+      name: 'Marquis Spa Bright All-Purpose Cleaner 32 oz.',
       sku: '23807',
       brand: 'Marquis',
       category: 'Cleaners & Protectants',
@@ -718,7 +718,7 @@ export const marquisAccessories: AccessoryVendor = {
     },
     {
       id: 'mq-23808-marquis-rapid-action-filter-cleaner-32-o',
-      name: 'Marquis Rapid Action Filter Cleaner 32 oz. w/Spray Nozzle',
+      name: 'Marquis Rapid Action Filter Cleaner 32 oz.',
       sku: '23808',
       brand: 'Marquis',
       category: 'Cleaners & Protectants',
@@ -731,8 +731,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Marquis Rapid Action Filter Cleaner 32 oz. w/Spray Nozzle Use as a soaking solution or as a spray-on/rinse. (12/cs) Not for use on acrylic surfaces.',
     },
     {
-      id: 'mq-23809-marquis-jetline-cleaner-16-oz-bottle-rem',
-      name: 'Marquis Jetline Cleaner 16 oz. Bottle Removes gunk in',
+      id: 'mq-23809-marquis-jetline-cleaner-16-oz',
+      name: 'Marquis Jetline Cleaner 16 oz.',
       sku: '23809',
       brand: 'Marquis',
       category: 'Cleaners & Protectants',
@@ -745,8 +745,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Marquis Jetline Cleaner 16 oz. Bottle Removes gunk in plumbing. Use at drain and fill.',
     },
     {
-      id: 'mq-23816-marquis-vinyl-cover-cleaner-16-oz-bottle',
-      name: 'Marquis Vinyl Cover Cleaner 16 oz. Bottle Conditions and',
+      id: 'mq-23816-marquis-vinyl-cover-cleaner-16-oz',
+      name: 'Marquis Vinyl Cover Cleaner 16 oz.',
       sku: '23816',
       brand: 'Marquis',
       category: 'Cleaners & Protectants',
@@ -759,8 +759,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Marquis Vinyl Cover Cleaner 16 oz. Bottle Conditions and cleans vinyl covers.',
     },
     {
-      id: 'mq-23817-marquis-water-clarifier-16-oz-bottle-gro',
-      name: 'Marquis Water Clarifier 16 oz. bottle- Group solids to be',
+      id: 'mq-23817-marquis-water-clarifier-16-oz',
+      name: 'Marquis Water Clarifier 16 oz.',
       sku: '23817',
       brand: 'Marquis',
       category: 'Cleaners & Protectants',
@@ -773,8 +773,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Marquis Water Clarifier 16 oz. bottle- Group solids to be captured by filter and removed from the hot tub.',
     },
     {
-      id: 'mq-23818-marquis-defoamer-16-oz-bottle-silicone-b',
-      name: 'Marquis Defoamer 16 oz. bottle Silicone-based defoamer will',
+      id: 'mq-23818-marquis-defoamer-16-oz',
+      name: 'Marquis Defoamer 16 oz.',
       sku: '23818',
       brand: 'Marquis',
       category: 'Cleaners & Protectants',
@@ -787,8 +787,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Marquis Defoamer 16 oz. bottle Silicone-based defoamer will keep foaming under control.',
     },
     {
-      id: 'mq-23819-marquis-metal-stain-remover-16-oz-bottle',
-      name: 'Marquis Metal & Stain Remover 16 oz. bottle',
+      id: 'mq-23819-marquis-metal-stain-remover-16-oz',
+      name: 'Marquis Metal & Stain Remover 16 oz.',
       sku: '23819',
       brand: 'Marquis',
       category: 'Cleaners & Protectants',
@@ -801,8 +801,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Marquis Metal & Stain Remover 16 oz. bottle - On start-up, treat your spa for iron and other metals/minerals.',
     },
     {
-      id: 'mq-23857-303-protectant-16-oz-spray-bottle',
-      name: '303 Protectant 16 oz. Spray Bottle',
+      id: 'mq-23857-303-protectant-16-oz',
+      name: '303 Protectant 16 oz.',
       sku: '23857',
       brand: '303',
       category: 'Cleaners & Protectants',
@@ -815,8 +815,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: '303 Protectant 16 oz. Spray Bottle - Works on a variety of household items such as vinyl furniture, vinyl covers',
     },
     {
-      id: 'mq-23864-ultimate-cleanse-4-oz-jar',
-      name: 'Ultimate Cleanse - 4 oz. jar',
+      id: 'mq-23864-ultimate-cleanse',
+      name: 'Ultimate Cleanse',
       sku: '23864',
       category: 'Cleaners & Protectants',
       price: 192.00,
@@ -828,8 +828,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Ultimate Cleanse - 4 oz. jar - Just a teaspoon does it, simply add to water before you \'re ready to dump it and let the spa run for 20 minutes, and drain, removes build up on pipes 12/cs',
     },
     {
-      id: 'mq-23866-303-fabric-guard-16-oz-spray-bottle-prot',
-      name: '303 Fabric Guard 16 oz. Spray Bottle Protect your',
+      id: 'mq-23866-303-fabric-guard-16-oz',
+      name: '303 Fabric Guard 16 oz.',
       sku: '23866',
       brand: '303',
       category: 'Cleaners & Protectants',
@@ -871,8 +871,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Original Marquis® Signature Filter 2000+- 50 Sq. Ft., threaded, 3 oz. white with gray crescent pull cap. Case quantity 8.',
     },
     {
-      id: 'mq-20042-original-marquis-sig-2000-10-vector21-20',
-      name: 'Original Marquis® Sig. 2000-10/Vector21 2023/2019+ BASE',
+      id: 'mq-20042-marquis-sig-filter-2000-10-vector21-2023',
+      name: 'Marquis® Sig. Filter 2000-10 / Vector21 2023+ / Base Celebrity / Nashville Elite',
       sku: '20042',
       brand: 'Marquis',
       category: 'Filter Cartridges',
@@ -952,8 +952,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Marquis® Filter - Base Celebrity thru 2018 and e-Series from 2008-2010, 25 Sq. Ft., slip, 3 oz. white, open hole. Case quantity 8.',
     },
     {
-      id: 'mq-20363-original-marquis-filter-e-series-2010-35',
-      name: 'Original Marquis® Filter e-Series 2010+, 35 Sq. Ft',
+      id: 'mq-20363-original-marquis-filter-e-series-2010',
+      name: 'Original Marquis® Filter e-Series 2010+',
       sku: '20363',
       brand: 'Marquis',
       category: 'Filter Cartridges',
@@ -965,8 +965,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Original Marquis® Filter e-Series 2010+, 35 Sq. Ft. Slip, 3 oz. with open hole Case quantity 8.',
     },
     {
-      id: 'mq-20364-marquis-filter-e-series-2010-35-sq-ft',
-      name: 'Marquis® Filter E-Series 2010+, 35 Sq. Ft',
+      id: 'mq-20364-marquis-filter-e-series-2010',
+      name: 'Marquis® Filter E-Series 2010+',
       sku: '20364',
       brand: 'Marquis',
       category: 'Filter Cartridges',
@@ -1008,8 +1008,8 @@ export const marquisAccessories: AccessoryVendor = {
 
     // ------------------ Tools & Accessories ------------------
     {
-      id: 'mq-20010-paradise-spa-vacuum-sweep-up-particles-a',
-      name: 'Paradise Spa Vacuum Sweep up particles and dirt that',
+      id: 'mq-20010-paradise-spa-vacuum',
+      name: 'Paradise Spa Vacuum',
       sku: '20010',
       brand: 'Paradise',
       category: 'Tools & Accessories',
@@ -1022,8 +1022,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Paradise Spa Vacuum Sweep up particles and dirt that accumulate on the seats and floor of your hot tub. Excluded from free freight offer.',
     },
     {
-      id: 'mq-20025-skimmer-net-long-enough-for-a-hot-tub',
-      name: 'Skimmer Net Long enough for a hot tub',
+      id: 'mq-20025-skimmer-net',
+      name: 'Skimmer Net',
       sku: '20025',
       category: 'Tools & Accessories',
       price: 5.75,
@@ -1034,8 +1034,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Skimmer Net Long enough for a hot tub, but not as big as a pool skimmer. 2 ft. overall length. Sold individually.',
     },
     {
-      id: 'mq-20026-marquis-oil-absorbing-floating-sponge-re',
-      name: 'Marquis Oil Absorbing Floating Sponge remove oils at',
+      id: 'mq-20026-marquis-oil-absorbing-floating-sponge',
+      name: 'Marquis Oil Absorbing Floating Sponge',
       sku: '20026',
       brand: 'Marquis',
       category: 'Tools & Accessories',
@@ -1046,8 +1046,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Marquis Oil Absorbing Floating Sponge remove oils at waterline, remove and toss when saturated. (shown with Marquis Sponge Glove) Sold Individually',
     },
     {
-      id: 'mq-20037-marquis-sponge-glove-non-scratch-surface',
-      name: 'Marquis Sponge Glove Non-scratch surface protects hands',
+      id: 'mq-20037-marquis-sponge-glove',
+      name: 'Marquis Sponge Glove',
       sku: '20037',
       brand: 'Marquis',
       category: 'Tools & Accessories',
@@ -1058,8 +1058,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Marquis Sponge Glove Non-scratch surface protects hands during cleaning. One size fits most. (shown with Oil Absorbing sponge) Sold individually',
     },
     {
-      id: 'mq-20598-measuring-cup-8-oz-capacity',
-      name: 'Measuring Cup 8 oz. capacity',
+      id: 'mq-20598-measuring-cup-8-oz',
+      name: 'Measuring Cup 8 oz.',
       sku: '20598',
       category: 'Tools & Accessories',
       price: 0.80,
@@ -1083,8 +1083,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Chlorine/Bromine 6-in-1 Test Strips, 50/bottle, tests for Chlorine/ Bromine/Alkalinity/Hardness/Free Chlorine/pH. Recommended for Europe and Canada.',
     },
     {
-      id: 'mq-23826-filter-flosser-filter-cleaning-wand-the-',
-      name: 'Filter Flosser Filter Cleaning Wand The right amount of',
+      id: 'mq-23826-filter-flosser-cleaning-wand',
+      name: 'Filter Flosser Cleaning Wand',
       sku: '23826',
       brand: 'Filter Flosser',
       category: 'Tools & Accessories',
@@ -1097,8 +1097,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Filter Flosser Filter Cleaning Wand The right amount of pressure to clean out in- between pleats on filters. Stainless steel, great for technicians.',
     },
     {
-      id: 'mq-23854-spin-lab-disks-for-testing-water-50-per-',
-      name: 'Spin Lab Disks for testing water, 50 per box',
+      id: 'mq-23854-spin-lab-test-disks-50-per-box',
+      name: 'Spin Lab Test Disks (50 per box)',
       sku: '23854',
       brand: 'Spin Lab',
       category: 'Tools & Accessories',
@@ -1125,8 +1125,8 @@ export const marquisAccessories: AccessoryVendor = {
 
     // ------------------ Covers & Lifters ------------------
     {
-      id: 'mq-20027-cover-lock-kit-with-center-release-and-k',
-      name: 'Cover Lock Kit with Center Release and Keys (4 pc) Cover',
+      id: 'mq-20027-cover-lock-kit-4-pc',
+      name: 'Cover Lock Kit (4 pc)',
       sku: '20027',
       category: 'Covers & Lifters',
       price: 8.95,
@@ -1137,8 +1137,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Cover Lock Kit with Center Release and Keys (4 pc) Cover Lock sets consist of both male and female end with plastic keys.',
     },
     {
-      id: 'mq-20035-hydraulic-cover-lifteri',
-      name: 'Hydraulic Cover LifterI',
+      id: 'mq-20035-hydraulic-cover-lifter',
+      name: 'Hydraulic Cover Lifter',
       sku: '20035',
       brand: 'Marquis',
       category: 'Covers & Lifters',
@@ -1150,8 +1150,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Hydraulic Cover LifterI, shock assisted cover lift, requires as little as six inches behind spa. May ship inside spa. Sold by case or individually. Not for use on V65L or Monaco (4/Ctn)',
     },
     {
-      id: 'mq-20087-safe-t-rail-powder-coated-aluminum-safe-',
-      name: 'Safe-T Rail, Powder-coated aluminum Safe-T Rail with two',
+      id: 'mq-20087-safe-t-rail',
+      name: 'Safe-T Rail',
       sku: '20087',
       brand: 'Marquis',
       category: 'Covers & Lifters',
@@ -1163,8 +1163,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Safe-T Rail, Powder-coated aluminum Safe-T Rail with two composite mounting brackets with 8 screws each. Fits most above ground spas, Skirt mount only. Sold by case or individually. (4/ctn)',
     },
     {
-      id: 'mq-20345-freestyle-lift',
-      name: 'Freestyle Lift',
+      id: 'mq-20345-freestyle-lift-7-5-or-less-vector21-seri',
+      name: 'Freestyle Lift - 7.5" or less Vector21 series',
       sku: '20345',
       brand: 'Marquis',
       category: 'Covers & Lifters',
@@ -1188,8 +1188,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'The Spa Side Step - Available for Round or Square spas, large slip resistant tread, sturdy wide steps 16 x 24 x 32"',
     },
     {
-      id: 'mq-20745-covermate-i-with-extended-arms-for-use-w',
-      name: 'CoverMate I with Extended Arms - For use with 17\' ATV',
+      id: 'mq-20745-covermate-i-with-extended-arms',
+      name: 'CoverMate I with Extended Arms',
       sku: '20745',
       brand: 'Marquis',
       category: 'Covers & Lifters',
@@ -1226,8 +1226,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'CoverMate II with Understyle bracket - Install a lift in the showroom with no brackets to screw in! GREAT FOR VECTOR21. May ship in spas. Sold by case or individually. (4/Ctn)',
     },
     {
-      id: 'mq-20752-deluxe-black-wind-strap-set-uses-1-5-nyl',
-      name: 'Deluxe Black Wind Strap Set - Uses 1.5" nylon strap in Black',
+      id: 'mq-20752-deluxe-black-wind-strap-set',
+      name: 'Deluxe Black Wind Strap Set',
       sku: '20752',
       category: 'Covers & Lifters',
       price: 33.75,
@@ -1260,8 +1260,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Spa Cover Wrap 7\' - Lightweight transport cover or home show, fits up to an 7\' square spa.',
     },
     {
-      id: 'mq-21259-marquis-cover-companion-is-powder-coated',
-      name: 'Marquis® Cover Companion is powder-coated aluminum',
+      id: 'mq-21259-marquis-cover-companion',
+      name: 'Marquis® Cover Companion',
       sku: '21259',
       brand: 'Marquis',
       category: 'Covers & Lifters',
@@ -1302,8 +1302,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Marquis® Logo Plush Towel in White, bath sheet size 35" x 70", heavy duty, plush terry towel. 10 per case or sold individually.',
     },
     {
-      id: 'mq-20497-large-rubber-floating-duck-8-long',
-      name: 'Large Rubber Floating Duck 8" long',
+      id: 'mq-20497-large-rubber-floating-duck',
+      name: 'Large Rubber Floating Duck',
       sku: '20497',
       category: 'Lifestyle',
       price: 15.00,
@@ -1314,8 +1314,8 @@ export const marquisAccessories: AccessoryVendor = {
       description: 'Large Rubber Floating Duck 8" long, super sized fun! Make a statement by putting this oversized duck in a tub. Sold individually',
     },
     {
-      id: 'mq-20498-luther-loon-fun-floating-hot-tub-accesso',
-      name: 'Luther Loon, fun, floating hot tub accessory',
+      id: 'mq-20498-luther-loon',
+      name: 'Luther Loon',
       sku: '20498',
       brand: 'Marquis',
       category: 'Lifestyle',

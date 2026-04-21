@@ -131,6 +131,34 @@ def detect_brand(description: str) -> Optional[str]:
     return None
 
 
+# Hand-curated product names for products where description bleeds into the auto-extracted name
+# (typically because the source description has no clear name/description separator).
+NAME_OVERRIDES: dict[str, str] = {
+    "20010": "Paradise Spa Vacuum",
+    "20015": "Serene Mineral Cartridge",
+    "20016": "Serene Bromine Floating Sanitizer System",
+    "20025": "Skimmer Net",
+    "20026": "Marquis Oil Absorbing Floating Sponge",
+    "20027": "Cover Lock Kit (4 pc)",
+    "20035": "Hydraulic Cover Lifter",
+    "20037": "Marquis Sponge Glove",
+    "20042": "Marquis® Sig. Filter 2000-10 / Vector21 2023+ / Base Celebrity / Nashville Elite",
+    "20150": "Serene Bromine Inline Start-up Kit",
+    "20151": "Serene Bromine Floating Start-up Kit",
+    "20198": "Serene Bromine 200 gram Cartridge",
+    "20323": "Spa Frog Jump Start",
+    "20399": "Spa Frog Canadian Conditioning Cartridge",
+    "20497": "Large Rubber Floating Duck",
+    "20630": "@ease Swim Spa Cartridge Kit",
+    "20683": "@ease SmartChlor Cartridge Refill",
+    "20691": "Spa Frog EU Bromine Floating Sanitizer System",
+    "20097": "Spa Frog EU Conditioning Cartridge",
+    "21259": "Marquis® Cover Companion",
+    "23826": "Filter Flosser Cleaning Wand",
+    "23854": "Spin Lab Test Disks (50 per box)",
+}
+
+
 def extract_short_name(description: str) -> str:
     """
     Pull a concise product name from the description.
@@ -146,48 +174,63 @@ def extract_short_name(description: str) -> str:
     """
     text = description.strip()
 
-    # Collect ALL candidate cut points from various separator types.
-    candidates: list[int] = []
+    # Measurement abbreviations that commonly terminate a product name (e.g. "16 oz.", "1.25lb.", "35 Sq. Ft.")
+    unit_re = r"(?:oz|lb|lbs|gal|ml|gr|ft|sq|pc)"
 
-    # Type 1: " - " (or en/em dash with spaces) — primary separator
-    candidates.extend(m.start() for m in re.finditer(r"\s+[-\u2010\u2013\u2014]\s+", text))
+    # Two tiers of candidate cuts.
+    strong: list[int] = []
+    weak: list[int] = []
 
-    # Type 2: sentence-ending period followed by space + capital (excluding measurement abbrs)
-    for m in re.finditer(r"\.\s+[A-Z]", text):
-        before = text[max(0, m.start() - 6):m.start()]
-        if re.search(r"\d\s*(?:oz|lb|lbs|gal|ml|gr|ft|sq|pc)\s*$", before, re.I):
+    # Strong: " - " separator (or en/em dash with spaces)
+    strong.extend(m.start() for m in re.finditer(r"\s+[-\u2010\u2013\u2014]\s+", text))
+
+    # Strong: compound measurement "N Sq. Ft." — keep both units together
+    for m in re.finditer(rf"\d\s*{unit_re}\.\s*{unit_re}\.", text, re.I):
+        strong.append(m.end())
+
+    # Strong: standalone measurement-period (e.g. "16 oz.", "1.25lb.", "5lb.", "1.5lb.Slow").
+    # Skip this match if we're right before " Ft." (compound handled above).
+    for m in re.finditer(rf"\d\s*{unit_re}\.", text, re.I):
+        # Check if "Ft." follows within 3 chars — if so, this is part of a compound
+        following = text[m.end():m.end() + 4]
+        if re.match(r"\s*Ft\.", following, re.I):
             continue
-        candidates.append(m.start())
+        strong.append(m.end())
 
-    # Type 3: measurement-period followed by capital letter — also a valid name boundary.
-    # e.g., "Marquis® Chlorinating Granules 2lb. Convenient mid-size" → cut after "2lb."
-    for m in re.finditer(r"\d(?:oz|lb|lbs|gal|ml|gr|ft|sq|pc)\.\s+[A-Z]", text, re.I):
-        # cut goes AFTER the period (include "2lb." in the name)
-        candidates.append(m.end() - 3)  # position just after the period (before " [A-Z]")
+    # Strong: first comma when no " - " or measurement is present — it often marks
+    # the end of a product name in descriptions like "Luther Loon, fun, floating...".
+    # Only add the FIRST comma to strong cuts.
+    comma_matches = list(re.finditer(r",\s+", text))
+    if comma_matches:
+        strong.append(comma_matches[0].start())
 
-    # Type 4: first comma (only used if no better cut found)
-    comma_cuts = [m.start() for m in re.finditer(r",\s+", text)]
+    # Weak: sentence-ending period followed by capital (space optional)
+    for m in re.finditer(r"\.(?:\s+|)(?=[A-Z])", text):
+        weak.append(m.start() + 1)
 
-    candidates = sorted(set(candidates))
+    # Weak: subsequent comma cuts
+    weak.extend(m.start() for m in comma_matches[1:])
 
-    # All usable candidates must produce a name <= 60 chars
-    usable = [c for c in candidates if c <= 60]
+    strong = sorted(set(strong))
+    weak = sorted(set(weak))
 
-    # Pick LONGEST usable candidate >= 15 chars (sweet spot)
-    sweet = [c for c in usable if c >= 15]
-    if sweet:
-        return text[:max(sweet)].strip().rstrip(",;: -")
+    def pick(candidates):
+        usable = [c for c in candidates if 6 <= c <= 60]
+        sweet = [c for c in usable if c >= 15]
+        if sweet:
+            return text[:min(sweet)].strip().rstrip(",;: -")
+        if usable:
+            return text[:min(usable)].strip().rstrip(",;: -")
+        return None
 
-    # If only short candidates exist (< 15 chars), use the shortest — e.g. "StoMPS"
-    if usable:
-        return text[:min(usable)].strip().rstrip(",;: -")
+    result = pick(strong)
+    if result:
+        return result
 
-    # Fall back to comma cut within 60 chars
-    for c in comma_cuts:
-        if 15 <= c <= 60:
-            return text[:c].strip()
+    result = pick(weak)
+    if result:
+        return result
 
-    # Last resort: 60-char cap at word boundary
     return _cap_length(text, 60)
 
 
@@ -312,7 +355,8 @@ def parse_pdf(pdf_path: Path) -> list[Product]:
                     if col1.isdigit() and col2:
                         raw_desc = normalize(col2)
                         brand = detect_brand(raw_desc)
-                        short = extract_short_name(raw_desc)
+                        # Use manual override if present, else auto-extract
+                        short = NAME_OVERRIDES.get(col1) or extract_short_name(raw_desc)
                         desc = clean_description(raw_desc)
                         case_size = extract_case_size(raw_desc)
                         individually = is_sold_individually(raw_desc)
