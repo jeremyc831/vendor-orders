@@ -7,6 +7,24 @@ function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 }
 
+/**
+ * Jeremy's retail price (what customers pay). Prefers the pre-computed `storeRetail`
+ * on the product, falls back to computing from wholesale + shippingPct + vendor default.
+ * Formula: round(wholesale * (2 + shippingPct/100)).
+ * Returns null if we don't have enough info to compute.
+ */
+function computeRetail(
+  product: AccessoryProduct,
+  vendorDefaultShippingPct?: number,
+): number | null {
+  if (product.storeRetail != null) return product.storeRetail;
+  const wholesale = product.wholesale ?? product.price;
+  if (wholesale == null) return null;
+  const pct = product.shippingPct ?? vendorDefaultShippingPct;
+  if (pct == null) return null;
+  return Math.round(wholesale * (2 + pct / 100));
+}
+
 /** Build a composite key for the quantities map (products and variants coexist). */
 function qtyKey(productId: string, variantId?: string): string {
   return variantId ? `${productId}:${variantId}` : productId;
@@ -608,9 +626,19 @@ export default function AccessoryOrderForm({ vendor, onBack, onOrderSent }: Acce
                       )}
                       {!hasVariants && (
                         <>
-                          <span className={`font-mono text-sm ${isSelected ? 'text-amber-400' : 'text-brand-light'}`}>
-                            {formatCurrency(product.price)}{product.caseSize ? '/case' : ''}
-                          </span>
+                          <div className="flex flex-col items-end">
+                            <span className={`font-mono text-sm ${isSelected ? 'text-amber-400' : 'text-brand-light'}`}>
+                              {formatCurrency(product.price)}{product.caseSize ? '/case' : ''}
+                            </span>
+                            {(() => {
+                              const retail = computeRetail(product, vendor.defaultShippingPct);
+                              return retail != null ? (
+                                <span className="text-[10px] text-slate-500 font-mono leading-tight">
+                                  retail ${retail}
+                                </span>
+                              ) : null;
+                            })()}
+                          </div>
                           {qtyControl(product.id, undefined, productQty)}
                         </>
                       )}
@@ -646,9 +674,23 @@ export default function AccessoryOrderForm({ vendor, onBack, onOrderSent }: Acce
                               )}
                             </div>
                             <div className="flex items-center gap-3 shrink-0">
-                              <span className={`font-mono text-sm ${vSelected ? 'text-amber-400' : 'text-brand-light'}`}>
-                                {formatCurrency(vPrice)}
-                              </span>
+                              <div className="flex flex-col items-end">
+                                <span className={`font-mono text-sm ${vSelected ? 'text-amber-400' : 'text-brand-light'}`}>
+                                  {formatCurrency(vPrice)}
+                                </span>
+                                {(() => {
+                                  // Compute retail for the variant using its wholesale (or price) + parent's shippingPct
+                                  const vWholesale = variant.wholesale ?? variant.price;
+                                  const pct = product.shippingPct ?? vendor.defaultShippingPct;
+                                  if (vWholesale == null || pct == null) return null;
+                                  const retail = Math.round(vWholesale * (2 + pct / 100));
+                                  return (
+                                    <span className="text-[10px] text-slate-500 font-mono leading-tight">
+                                      retail ${retail}
+                                    </span>
+                                  );
+                                })()}
+                              </div>
                               {qtyControl(product.id, variant.id, vQty)}
                             </div>
                           </div>
