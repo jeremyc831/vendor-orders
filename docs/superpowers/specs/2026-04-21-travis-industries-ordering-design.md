@@ -313,9 +313,9 @@ Address remains editable per order. Implement by adding a centralized supply-ord
 Add `defaultTravisDealer` to `src/data/dealer.ts` with:
 - Dealer #: `CA419`
 - Name / orderedBy / email / phone: existing Hibernation Stoves & Spas info (match the shape of `defaultMarquisDealer` / `defaultSundanceDealer`)
-- Payment method: `EFT/Prepay` (matches Sundance; revisit if Travis uses a different term)
+- Payment method: `Invoice`
 - `shippingAddress`: Angels Camp for the Stoves flow; the Parts flow overrides to Arnold via the supply-order default
-- Also add `DEFAULT_TRAVIS_STOVES_FREIGHT` alongside existing `DEFAULT_MARQUIS_FREIGHT` / `DEFAULT_SUNDANCE_FREIGHT` — value TBD, confirm with Jeremy during plan or leave at `0` if Travis-quoted freight is always added per order
+- Add `DEFAULT_TRAVIS_STOVES_FREIGHT = 0` alongside existing `DEFAULT_MARQUIS_FREIGHT` / `DEFAULT_SUNDANCE_FREIGHT`. Field remains editable per order — Jeremy fills it in when Travis quotes it
 
 ## File Structure — What Lands Where
 
