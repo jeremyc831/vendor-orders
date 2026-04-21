@@ -147,12 +147,9 @@ NAME_OVERRIDES: dict[str, str] = {
     "20151": "Serene Bromine Floating Start-up Kit",
     "20198": "Serene Bromine 200 gram Cartridge",
     "20323": "Spa Frog Jump Start",
-    "20399": "Spa Frog Canadian Conditioning Cartridge",
     "20497": "Large Rubber Floating Duck",
     "20630": "@ease Swim Spa Cartridge Kit",
     "20683": "@ease SmartChlor Cartridge Refill",
-    "20691": "Spa Frog EU Bromine Floating Sanitizer System",
-    "20097": "Spa Frog EU Conditioning Cartridge",
     "21259": "Marquis® Cover Companion",
     "23826": "Filter Flosser Cleaning Wand",
     "23854": "Spin Lab Test Disks (50 per box)",
@@ -328,6 +325,7 @@ CATEGORIES = [
 def parse_pdf(pdf_path: Path) -> list[Product]:
     products: list[Product] = []
     current_section = ""
+    skip_section = False  # when True, drop all products until the next section header
     with pdfplumber.open(pdf_path) as pdf:
         for page_idx, page in enumerate(pdf.pages):
             # Use find_tables so we get bboxes (positions); extract() returns the same cell content.
@@ -349,10 +347,16 @@ def parse_pdf(pdf_path: Path) -> list[Product]:
                         if any(x in header for x in ("Item ID", "Combine", "Freight Pro", "Free Freight")):
                             continue
                         current_section = header
+                        # Skip EU/Canadian products — Jeremy (US dealer) doesn't carry them.
+                        skip_section = bool(
+                            re.search(r"\b(EUROPEAN|CANADIAN|EU/)\b", header, re.I)
+                        )
                         continue
 
                     # Product row
                     if col1.isdigit() and col2:
+                        if skip_section:
+                            continue
                         raw_desc = normalize(col2)
                         brand = detect_brand(raw_desc)
                         # Use manual override if present, else auto-extract
