@@ -1,10 +1,32 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { AccessoryVendor, AccessoryProduct, AccessoryLineItem, AccessoryOrderData } from '@/types/accessories';
+import { AccessoryVendor, AccessoryProduct, AccessoryVariant, AccessoryLineItem, AccessoryOrderData } from '@/types/accessories';
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+}
+
+/** Build a composite key for the quantities map (products and variants coexist). */
+function qtyKey(productId: string, variantId?: string): string {
+  return variantId ? `${productId}:${variantId}` : productId;
+}
+
+/** Parse a composite key back into (productId, variantId). */
+function parseQtyKey(key: string): { productId: string; variantId?: string } {
+  const idx = key.indexOf(':');
+  if (idx === -1) return { productId: key };
+  return { productId: key.slice(0, idx), variantId: key.slice(idx + 1) };
+}
+
+/** Rescale a Wix CDN image URL to a smaller thumbnail size. */
+function thumbUrl(url: string, size = 120): string {
+  return url.replace(/\/fit\/w_\d+,h_\d+,q_\d+\//, `/fit/w_${size},h_${size},q_90/`);
+}
+
+/** Build "Color: Black, Size: 8"" label from a variant's option map. */
+function variantLabel(variant: AccessoryVariant): string {
+  return Object.entries(variant.options).map(([k, v]) => `${k}: ${v}`).join(', ');
 }
 
 const emptyForm = { name: '', sku: '', price: '', category: '', unit: '', caseSize: '' };
@@ -27,6 +49,7 @@ export default function AccessoryOrderForm({ vendor, onBack, onOrderSent }: Acce
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<'success' | 'error' | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [expandedDesc, setExpandedDesc] = useState<Set<string>>(new Set());
 
   // Product management state
   const [managing, setManaging] = useState(false);
@@ -56,9 +79,26 @@ export default function AccessoryOrderForm({ vendor, onBack, onOrderSent }: Acce
   const lineItems: AccessoryLineItem[] = useMemo(() => {
     return Object.entries(quantities)
       .filter(([, qty]) => qty > 0)
-      .map(([productId, qty]) => {
-        const product = products.find(p => p.id === productId)!;
+      .map(([key, qty]): AccessoryLineItem | null => {
+        const { productId, variantId } = parseQtyKey(key);
+        const product = products.find(p => p.id === productId);
         if (!product) return null;
+
+        if (variantId) {
+          const variant = product.variants?.find(v => v.id === variantId);
+          if (!variant) return null;
+          const unitPrice = variant.price ?? product.price;
+          return {
+            productId,
+            variantId,
+            name: product.name,
+            sku: variant.sku ?? product.sku,
+            variantLabel: variantLabel(variant),
+            price: unitPrice,
+            quantity: qty,
+            lineTotal: unitPrice * qty,
+          };
+        }
         return {
           productId,
           name: product.name,
@@ -68,15 +108,24 @@ export default function AccessoryOrderForm({ vendor, onBack, onOrderSent }: Acce
           lineTotal: product.price * qty,
         };
       })
-      .filter(Boolean) as AccessoryLineItem[];
+      .filter((x): x is AccessoryLineItem => x !== null);
   }, [quantities, products]);
 
   const subtotal = lineItems.reduce((sum, item) => sum + item.lineTotal, 0);
   const total = subtotal + freight;
   const isComplete = lineItems.length > 0 && poNumber.trim();
 
-  const setQuantity = (productId: string, qty: number) => {
-    setQuantities(prev => ({ ...prev, [productId]: Math.max(0, qty) }));
+  const setQuantity = (productId: string, qty: number, variantId?: string) => {
+    const key = qtyKey(productId, variantId);
+    setQuantities(prev => ({ ...prev, [key]: Math.max(0, qty) }));
+  };
+
+  const toggleDesc = (id: string) => {
+    setExpandedDesc(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
   };
 
   // --- CRUD handlers ---
@@ -149,7 +198,10 @@ export default function AccessoryOrderForm({ vendor, onBack, onOrderSent }: Acce
       if (res.ok) {
         setQuantities(prev => {
           const next = { ...prev };
-          delete next[product.id];
+          // Clean up both the product and any variant qtys
+          Object.keys(next).forEach(k => {
+            if (k === product.id || k.startsWith(`${product.id}:`)) delete next[k];
+          });
           return next;
         });
         await loadProducts();
@@ -218,7 +270,7 @@ export default function AccessoryOrderForm({ vendor, onBack, onOrderSent }: Acce
     ? products.filter(p => p.category === activeCategory)
     : products;
 
-  // --- Reusable inline form row ---
+  // --- Reusable inline form row (used for adding and editing custom products) ---
   const renderFormRow = (
     form: typeof emptyForm,
     setForm: (f: typeof emptyForm) => void,
@@ -318,6 +370,32 @@ export default function AccessoryOrderForm({ vendor, onBack, onOrderSent }: Acce
     </div>
   );
 
+  // --- Quantity control (reused for both product-level and variant-level rows) ---
+  const qtyControl = (productId: string, variantId: string | undefined, qty: number) => (
+    <div className="flex items-center gap-1">
+      <button
+        onClick={() => setQuantity(productId, qty - 1, variantId)}
+        className="w-8 h-8 rounded bg-slate-700 text-white hover:bg-slate-600 transition flex items-center justify-center text-lg font-bold"
+      >
+        −
+      </button>
+      <input
+        type="number"
+        value={qty || ''}
+        onChange={e => setQuantity(productId, parseInt(e.target.value) || 0, variantId)}
+        className="w-14 text-center bg-input-bg border border-input-border rounded px-1 py-1 text-white font-mono focus:border-brand focus:outline-none"
+        min={0}
+        placeholder="0"
+      />
+      <button
+        onClick={() => setQuantity(productId, qty + 1, variantId)}
+        className="w-8 h-8 rounded bg-slate-700 text-white hover:bg-slate-600 transition flex items-center justify-center text-lg font-bold"
+      >
+        +
+      </button>
+    </div>
+  );
+
   return (
     <div className="space-y-6 pb-12">
       {/* Selected vendor badge */}
@@ -401,8 +479,12 @@ export default function AccessoryOrderForm({ vendor, onBack, onOrderSent }: Acce
         ) : (
           <>
             {visibleProducts.map(product => {
-              const qty = quantities[product.id] || 0;
-              const isSelected = qty > 0;
+              const hasVariants = !!product.variants?.length;
+              const productQty = quantities[product.id] || 0;
+              const variantTotalQty = hasVariants
+                ? product.variants!.reduce((sum, v) => sum + (quantities[qtyKey(product.id, v.id)] || 0), 0)
+                : 0;
+              const isSelected = hasVariants ? variantTotalQty > 0 : productQty > 0;
               const isEditing = editingId === product.id;
 
               if (isEditing) {
@@ -418,86 +500,162 @@ export default function AccessoryOrderForm({ vendor, onBack, onOrderSent }: Acce
                 );
               }
 
+              const hasDesc = !!product.description;
+              const descExpanded = expandedDesc.has(product.id);
+              const showDescFull = descExpanded && hasDesc;
+
               return (
                 <div
                   key={product.id}
-                  className={`flex items-center justify-between px-4 py-3 rounded-lg border-2 transition ${
+                  className={`rounded-lg border-2 transition ${
                     isSelected
                       ? 'border-amber-400 bg-amber-400/10'
                       : 'border-card-border bg-card'
                   }`}
                 >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-white font-medium">{product.name}</span>
-                      {product.isCustom && managing && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-brand/20 text-brand-light">Custom</span>
-                      )}
-                    </div>
-                    <div className="text-xs text-slate-500">
-                      {product.sku && <span>{product.sku}</span>}
-                      {product.caseSize && (
-                        <span>{product.sku ? ' · ' : ''}{product.caseSize} per case</span>
-                      )}
-                      {!product.caseSize && product.unit && (
-                        <span>{product.sku ? ' · ' : ''}{product.unit}</span>
-                      )}
-                    </div>
-                    {isSelected && product.caseSize && (
-                      <div className="text-xs text-amber-400 mt-0.5">
-                        {qty} {qty === 1 ? 'case' : 'cases'} = {qty * product.caseSize} units
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    {managing && product.isCustom && (
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => startEdit(product)}
-                          className="w-7 h-7 rounded text-slate-500 hover:text-brand-light hover:bg-slate-700 transition flex items-center justify-center"
-                          title="Edit"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProduct(product)}
-                          className="w-7 h-7 rounded text-slate-500 hover:text-red-400 hover:bg-slate-700 transition flex items-center justify-center"
-                          title="Delete"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
-                    )}
-                    <span className={`font-mono text-sm ${isSelected ? 'text-amber-400' : 'text-brand-light'}`}>
-                      {formatCurrency(product.price)}{product.caseSize ? '/case' : ''}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => setQuantity(product.id, qty - 1)}
-                        className="w-8 h-8 rounded bg-slate-700 text-white hover:bg-slate-600 transition flex items-center justify-center text-lg font-bold"
+                  <div className="flex items-start gap-3 px-4 py-3">
+                    {/* Image thumbnail */}
+                    {product.imageUrl && (
+                      <a
+                        href={product.sourceUrl || undefined}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 w-16 h-16 rounded bg-white/95 overflow-hidden border border-card-border hover:border-brand-light transition"
+                        title={product.sourceUrl ? 'View on vendor site' : undefined}
                       >
-                        −
-                      </button>
-                      <input
-                        type="number"
-                        value={qty || ''}
-                        onChange={e => setQuantity(product.id, parseInt(e.target.value) || 0)}
-                        className="w-14 text-center bg-input-bg border border-input-border rounded px-1 py-1 text-white font-mono focus:border-brand focus:outline-none"
-                        min={0}
-                        placeholder="0"
-                      />
-                      <button
-                        onClick={() => setQuantity(product.id, qty + 1)}
-                        className="w-8 h-8 rounded bg-slate-700 text-white hover:bg-slate-600 transition flex items-center justify-center text-lg font-bold"
-                      >
-                        +
-                      </button>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={thumbUrl(product.imageUrl, 120)}
+                          alt={product.name}
+                          className="w-full h-full object-contain"
+                          loading="lazy"
+                        />
+                      </a>
+                    )}
+
+                    {/* Name + metadata */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-white font-medium">{product.name}</span>
+                        {product.brand && (
+                          <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400">
+                            {product.brand}
+                          </span>
+                        )}
+                        {product.outOfStock && (
+                          <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                            Out of Stock
+                          </span>
+                        )}
+                        {product.isCustom && managing && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-brand/20 text-brand-light">Custom</span>
+                        )}
+                      </div>
+                      <div className="text-xs text-slate-500 mt-0.5">
+                        {product.sku && <span>{product.sku}</span>}
+                        {product.caseSize && (
+                          <span>{product.sku ? ' · ' : ''}{product.caseSize} per case</span>
+                        )}
+                        {!product.caseSize && product.unit && (
+                          <span>{product.sku ? ' · ' : ''}{product.unit}</span>
+                        )}
+                      </div>
+                      {hasDesc && (
+                        <div className="mt-1">
+                          <p className={`text-xs text-slate-400 ${showDescFull ? '' : 'line-clamp-2'}`}>
+                            {product.description}
+                          </p>
+                          {product.description!.length > 120 && (
+                            <button
+                              onClick={() => toggleDesc(product.id)}
+                              className="text-xs text-brand-light hover:text-white transition mt-0.5"
+                            >
+                              {showDescFull ? 'Show less' : 'Show more'}
+                            </button>
+                          )}
+                        </div>
+                      )}
+                      {!hasVariants && isSelected && product.caseSize && (
+                        <div className="text-xs text-amber-400 mt-0.5">
+                          {productQty} {productQty === 1 ? 'case' : 'cases'} = {productQty * product.caseSize} units
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Right side: manage buttons, price, qty (only when no variants) */}
+                    <div className="flex items-center gap-3 shrink-0">
+                      {managing && product.isCustom && (
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => startEdit(product)}
+                            className="w-7 h-7 rounded text-slate-500 hover:text-brand-light hover:bg-slate-700 transition flex items-center justify-center"
+                            title="Edit"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProduct(product)}
+                            className="w-7 h-7 rounded text-slate-500 hover:text-red-400 hover:bg-slate-700 transition flex items-center justify-center"
+                            title="Delete"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      )}
+                      {!hasVariants && (
+                        <>
+                          <span className={`font-mono text-sm ${isSelected ? 'text-amber-400' : 'text-brand-light'}`}>
+                            {formatCurrency(product.price)}{product.caseSize ? '/case' : ''}
+                          </span>
+                          {qtyControl(product.id, undefined, productQty)}
+                        </>
+                      )}
                     </div>
                   </div>
+
+                  {/* Variant sub-rows */}
+                  {hasVariants && (
+                    <div className="border-t border-card-border bg-black/10 divide-y divide-card-border/50">
+                      {product.variants!.map(variant => {
+                        const vKey = qtyKey(product.id, variant.id);
+                        const vQty = quantities[vKey] || 0;
+                        const vSelected = vQty > 0;
+                        const vPrice = variant.price ?? product.price;
+                        return (
+                          <div
+                            key={variant.id}
+                            className={`flex items-center justify-between px-4 py-2 transition ${
+                              vSelected ? 'bg-amber-400/10' : ''
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <span className={`text-sm ${vSelected ? 'text-amber-400' : 'text-slate-300'}`}>
+                                {variantLabel(variant)}
+                              </span>
+                              {variant.sku && (
+                                <span className="text-[11px] text-slate-500 font-mono">{variant.sku}</span>
+                              )}
+                              {variant.outOfStock && (
+                                <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                                  Out of Stock
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3 shrink-0">
+                              <span className={`font-mono text-sm ${vSelected ? 'text-amber-400' : 'text-brand-light'}`}>
+                                {formatCurrency(vPrice)}
+                              </span>
+                              {qtyControl(product.id, variant.id, vQty)}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -543,8 +701,12 @@ export default function AccessoryOrderForm({ vendor, onBack, onOrderSent }: Acce
         <div className="bg-card rounded-lg border border-card-border p-4 space-y-2">
           <h3 className="font-semibold text-white mb-2">Order Summary</h3>
           {lineItems.map(item => (
-            <div key={item.productId} className="flex justify-between text-sm text-slate-300">
-              <span>{item.name} x{item.quantity}</span>
+            <div key={qtyKey(item.productId, item.variantId)} className="flex justify-between text-sm text-slate-300">
+              <span>
+                {item.name}
+                {item.variantLabel ? ` (${item.variantLabel})` : ''}
+                {' '}x{item.quantity}
+              </span>
               <span className="font-mono">{formatCurrency(item.lineTotal)}</span>
             </div>
           ))}

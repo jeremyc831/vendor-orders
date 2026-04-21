@@ -15,14 +15,16 @@ const transporter = nodemailer.createTransport({
 });
 
 function buildEmailHtml(data: AccessoryOrderData): string {
-  const itemRows = data.lineItems.map(item =>
-    `<tr>
-      <td style="padding:4px 8px;border:1px solid #ddd">${item.name}${item.sku ? ` (${item.sku})` : ''}</td>
+  const itemRows = data.lineItems.map(item => {
+    const variantPart = item.variantLabel ? ` — <em>${item.variantLabel}</em>` : '';
+    const skuPart = item.sku ? ` (${item.sku})` : '';
+    return `<tr>
+      <td style="padding:4px 8px;border:1px solid #ddd">${item.name}${variantPart}${skuPart}</td>
       <td style="padding:4px 8px;border:1px solid #ddd;text-align:center">${item.quantity}</td>
       <td style="padding:4px 8px;border:1px solid #ddd;text-align:right">$${item.price.toFixed(2)}</td>
       <td style="padding:4px 8px;border:1px solid #ddd;text-align:right">$${item.lineTotal.toFixed(2)}</td>
-    </tr>`
-  ).join('');
+    </tr>`;
+  }).join('');
 
   return `
     <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333">
