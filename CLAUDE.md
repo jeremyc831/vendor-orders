@@ -129,6 +129,16 @@ Add to the `options` array in the series file with appropriate conditional field
 2. Export the series constant
 3. Import and add to the array in `src/data/index.ts`
 
+### Importing the Travis Industries catalog
+Re-run after the 2026 dealer-cost PDF is updated in `docs/`:
+```bash
+npm run import:travis
+```
+Outputs: `src/data/travis/stoves.ts` (anchor products) and `src/data/travis/parts.ts`
+(log sets, conversion kits, accessories). Uses Tier 4 pricing (50% column for
+anchors, Cost column for sub-items). Classification overrides live in
+`scripts/import-travis-overrides.json`.
+
 ## Known Issues / Notes
 - Dropbox syncing can cause EPERM errors on `.next/` folder. Fix: stop server, delete `.next`, restart.
 - The `proxy.ts` at project root is the Next.js 16 convention (renamed from middleware.ts). There's also a `src/middleware.ts` that works with the current setup.
