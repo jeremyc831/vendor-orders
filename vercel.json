@@ -1,0 +1,6 @@
+{
+  "crons": [
+    { "path": "/api/travis/parts-reminder", "schedule": "0 19 * * 4" },
+    { "path": "/api/travis/parts-submit", "schedule": "0 20 * * 4" }
+  ]
+}

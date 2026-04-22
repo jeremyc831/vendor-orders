@@ -6,8 +6,15 @@ const AUTH_TOKEN = 'authenticated';
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow auth API and login page
-  if (pathname === '/login' || pathname.startsWith('/api/auth')) {
+  // Allow auth API, login page, and cron endpoints (cron endpoints authenticate
+  // via Bearer CRON_SECRET inside the handler).
+  if (
+    pathname === '/login' ||
+    pathname.startsWith('/api/auth') ||
+    pathname === '/api/travis/parts-submit' ||
+    pathname === '/api/travis/parts-reminder' ||
+    pathname === '/api/travis/export-manual-parts'
+  ) {
     return NextResponse.next();
   }
 
