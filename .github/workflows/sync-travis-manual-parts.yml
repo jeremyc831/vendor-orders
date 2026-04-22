@@ -1,0 +1,98 @@
+name: Sync Travis Manual Parts
+
+on:
+  schedule:
+    # Sunday 03:00 UTC — well clear of Thursday send window.
+    - cron: "0 3 * * 0"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch pending manual parts from prod
+        id: fetch
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          GITHUB_SYNC_TOKEN: ${{ secrets.GITHUB_SYNC_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${APP_URL:-}" ] || [ -z "${GITHUB_SYNC_TOKEN:-}" ]; then
+            echo "::error::APP_URL variable or GITHUB_SYNC_TOKEN secret is not configured."
+            exit 1
+          fi
+          curl -fsSL \
+            -H "Authorization: Bearer ${GITHUB_SYNC_TOKEN}" \
+            "${APP_URL}/api/travis/export-manual-parts" > /tmp/pending.json
+          echo "count=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("/tmp/pending.json","utf8")).products.length)')" >> "$GITHUB_OUTPUT"
+
+      - name: Regenerate parts-manual.ts
+        run: |
+          node <<'EOF'
+          const fs = require('fs');
+          const { products } = JSON.parse(fs.readFileSync('/tmp/pending.json', 'utf8'));
+          const header = `// Hand-maintained / GH-Actions-sync target for manually-added Travis parts.
+          // See docs/superpowers/specs/2026-04-21-travis-industries-ordering-design.md
+          // ("Manual-parts storage (hybrid KV + TS)").
+          //
+          // Entries added here via the weekly GitHub Actions sync workflow (Plan 3).
+          // Safe to edit by hand if needed.
+
+          import { TravisProduct } from '@/types/travis';
+
+          export const travisPartsManual: TravisProduct[] = `;
+
+          // Sort by SKU for stable diffs.
+          const sorted = [...products].sort((a, b) => a.sku.localeCompare(b.sku));
+          const body = JSON.stringify(sorted, null, 2);
+          fs.writeFileSync('src/data/travis/parts-manual.ts', header + body + ';\n');
+          EOF
+
+      - name: Check for changes
+        id: diff
+        run: |
+          if git diff --quiet -- src/data/travis/parts-manual.ts; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          COUNT: ${{ steps.fetch.outputs.count }}
+        run: |
+          set -euo pipefail
+          git config user.name "hibernation-sync-bot"
+          git config user.email "info@hibernation.com"
+          git add src/data/travis/parts-manual.ts
+          git commit -m "chore: sync travis manual parts (${COUNT} pending)"
+          git push
+
+      - name: Clear KV pending list
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          GITHUB_SYNC_TOKEN: ${{ secrets.GITHUB_SYNC_TOKEN }}
+        run: |
+          set -euo pipefail
+          curl -fsSL -X DELETE \
+            -H "Authorization: Bearer ${GITHUB_SYNC_TOKEN}" \
+            "${APP_URL}/api/travis/export-manual-parts"
+
+      - name: No changes — exit clean
+        if: steps.diff.outputs.changed == 'false'
+        run: echo "No pending manual parts to sync."
