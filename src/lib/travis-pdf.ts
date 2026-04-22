@@ -1,6 +1,9 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import type { HAlignType, RowInput } from 'jspdf-autotable';
 import type { TravisOrderData } from '@/types/travis-order';
+
+const RIGHT: HAlignType = 'right';
 
 function formatMoney(n: number): string {
   return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -71,18 +74,18 @@ export function generateTravisPdf(data: TravisOrderData): Uint8Array {
     body: itemRows,
     foot: [
       [
-        { content: 'Subtotal', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
-        { content: formatMoney(data.subtotal), styles: { halign: 'right', fontStyle: 'bold' } },
+        { content: 'Subtotal', colSpan: 4, styles: { halign: RIGHT, fontStyle: 'bold' } },
+        { content: formatMoney(data.subtotal), styles: { halign: RIGHT, fontStyle: 'bold' } },
       ],
       ...(data.freight > 0 ? [[
-        { content: 'Freight', colSpan: 4, styles: { halign: 'right' } },
-        { content: formatMoney(data.freight), styles: { halign: 'right' } },
+        { content: 'Freight', colSpan: 4, styles: { halign: RIGHT } },
+        { content: formatMoney(data.freight), styles: { halign: RIGHT } },
       ]] : []),
       [
-        { content: 'Total', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold', fillColor: [230, 230, 230] } },
-        { content: formatMoney(data.total), styles: { halign: 'right', fontStyle: 'bold', fillColor: [230, 230, 230] } },
+        { content: 'Total', colSpan: 4, styles: { halign: RIGHT, fontStyle: 'bold', fillColor: [230, 230, 230] } },
+        { content: formatMoney(data.total), styles: { halign: RIGHT, fontStyle: 'bold', fillColor: [230, 230, 230] } },
       ],
-    ],
+    ] as RowInput[],
   });
 
   const afterItems =
