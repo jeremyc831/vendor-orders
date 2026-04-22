@@ -40,3 +40,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .scrape/
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
