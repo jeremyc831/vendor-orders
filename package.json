@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "import:marquis": "python scripts/import-marquis.py",
-    "import:tf": "python scripts/import-total-fireplace.py"
+    "import:tf": "python scripts/import-total-fireplace.py",
+    "import:travis": "python scripts/import-travis.py"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
