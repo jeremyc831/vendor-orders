@@ -7,7 +7,7 @@ import { AccessoryVendor } from '@/types/accessories';
 export const totalFireplace: AccessoryVendor = {
   id: 'total-fireplace',
   name: 'Total Fireplace',
-  orderEmail: 'info@hibernation.com', // testing — update when live
+  orderEmail: 'totalfireplace@yahoo.com',
   categories: [
     'Stovepipe Hardware',
     'Hearth Tools',
