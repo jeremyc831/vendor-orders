@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Manufacturer, DealerInfo } from '@/types/manufacturer';
 import { getSeriesForManufacturer, findSeries } from '@/data';
 import { defaultMarquisDealer, defaultSundanceDealer, DEFAULT_MARQUIS_FREIGHT, DEFAULT_SUNDANCE_FREIGHT } from '@/data/dealer';
@@ -52,6 +53,7 @@ export default function OrderPage() {
   const [noSteps, setNoSteps] = useState(false);
   const [orders, setOrders] = useState<StoredOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
+  const router = useRouter();
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -471,6 +473,33 @@ export default function OrderPage() {
                   </div>
                 </button>
               ))}
+            </div>
+          </section>
+        )}
+
+        {/* Travis Industries — home screen */}
+        {!manufacturer && !selectedAccessoryVendor && (
+          <section>
+            <h2 className="text-lg font-semibold text-white mb-4">Travis Industries</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => router.push('/travis/stoves')}
+                className="p-6 rounded-lg border-2 border-card-border bg-card text-slate-300 hover:border-slate-500 transition text-center"
+              >
+                <div className="text-2xl font-bold">Stoves / Fireplaces</div>
+                <div className="text-sm text-slate-400 mt-1">
+                  Dealer #CA419 &middot; LTL &middot; ships to showroom
+                </div>
+              </button>
+              <button
+                onClick={() => router.push('/travis/parts')}
+                className="p-6 rounded-lg border-2 border-card-border bg-card text-slate-300 hover:border-slate-500 transition text-center"
+              >
+                <div className="text-2xl font-bold">Parts</div>
+                <div className="text-sm text-slate-400 mt-1">
+                  Weekly queue &middot; UPS Ground &middot; ships to Arnold
+                </div>
+              </button>
             </div>
           </section>
         )}

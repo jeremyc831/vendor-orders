@@ -24,6 +24,8 @@ function vendorLabel(vendor: string): string {
     sundance: 'Sundance',
     'marquis-accessories': 'Marquis Acc.',
     'total-fireplace': 'Total Fireplace',
+    'travis-stoves': 'Travis Stoves',
+    'travis-parts': 'Travis Parts',
   };
   return labels[vendor] ?? vendor;
 }
