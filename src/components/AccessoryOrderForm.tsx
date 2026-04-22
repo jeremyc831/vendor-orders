@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { AccessoryVendor, AccessoryProduct, AccessoryVariant, AccessoryLineItem, AccessoryOrderData } from '@/types/accessories';
+import { DEFAULT_SUPPLY_SHIP_TO } from '@/data/shipping';
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
@@ -254,7 +255,7 @@ export default function AccessoryOrderForm({ vendor, onBack, onOrderSent }: Acce
         dealerName: 'Hibernation Stoves & Spas',
         orderedBy: 'Jeremy Carlson',
         email: 'jeremy@hibernation.com',
-        shippingAddress: '2122 Highway 49 Suite D, Angels Camp, CA (Appointment Required - 24 Hour Notice)',
+        shippingAddress: DEFAULT_SUPPLY_SHIP_TO,
         phone: '209-795-4339',
         poNumber,
         orderDate,
