@@ -26,3 +26,17 @@ export const defaultSundanceDealer: DealerInfo = {
 
 export const DEFAULT_MARQUIS_FREIGHT = 300;
 export const DEFAULT_SUNDANCE_FREIGHT = 550;
+
+export const defaultTravisDealer: DealerInfo = {
+  dealerName: 'Hibernation Stoves & Spas',
+  dealerNumber: 'CA419',
+  orderedBy: 'Jeremy Carlson',
+  email: 'jeremy@hibernation.com',
+  shippingAddress: '2122 Highway 49 Suite D, Angels Camp, CA 95222',
+  phone: '209-795-4339',
+  lastName: '',
+  orderDate: new Date().toISOString().split('T')[0],
+  paymentMethod: 'Invoice',
+};
+
+export const DEFAULT_TRAVIS_STOVES_FREIGHT = 0;
