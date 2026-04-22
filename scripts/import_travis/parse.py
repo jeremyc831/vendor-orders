@@ -70,17 +70,6 @@ def _is_subitem_header(header_row: List[Optional[str]]) -> bool:
     return "cost" in text and "sku" in text and "level" not in text
 
 
-def _first_line(cell: Optional[str]) -> str:
-    """Return the first non-empty line of a (possibly multi-line) cell."""
-    if not cell:
-        return ""
-    for line in cell.splitlines():
-        line = line.strip()
-        if line:
-            return line
-    return ""
-
-
 def _clean_name(raw: str) -> str:
     """
     Extract a clean product name from a table cell that may contain multi-line
@@ -110,7 +99,6 @@ def _parse_anchor_table(
     table: List[List[Optional[str]]],
     items: List[dict],
     seen_skus: set,
-    is_first_table: bool,
 ) -> None:
     """Parse an anchor-style table (Level 1–4 pricing columns)."""
     if len(table) < 2:
@@ -162,7 +150,7 @@ def _parse_anchor_table(
             "sku": sku,
             "name": name,
             "price": price,
-            "is_top_of_page": len(items) == 0 and is_first_table,
+            "is_top_of_page": len(items) == 0,
             "has_level_columns": True,
             "weightLbs": weight,
         })
@@ -251,7 +239,7 @@ def parse_page(page: "pdfplumber.page.Page", page_number: int) -> List[dict]:
 
         header = table[0]
         if _is_anchor_header(header):
-            _parse_anchor_table(table, items, seen_skus, is_first_table=(table_idx == 0))
+            _parse_anchor_table(table, items, seen_skus)
         elif _is_subitem_header(header):
             _parse_subitem_table(table, items, seen_skus)
         # Tables with neither pattern (e.g. footnote tables) are ignored
