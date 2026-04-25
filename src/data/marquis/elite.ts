@@ -27,8 +27,7 @@ export const eliteSeries: Series = {
     { id: 'controlmyspa', name: 'ControlMySpa RF', price: 225 },
     { id: '240v-upgrade', name: '240V Performance Upgrade', price: 110, availableOn: ['MONA-ELT', 'NASH-ELT'] },
     { id: '2-pump', name: '2-Pump Broadway Elt', price: 425, availableOn: ['BROA-ELT'], requires: '240v-upgrade' },
-    { id: 'inline-system', name: 'In-line System', price: 120 },
-    { id: 'microsilk', name: 'MicroSilk', price: 1025, unavailableOn: ['MONA-ELT'], excludes: ['2-pump'], note: 'Not available on Monaco Elt or Broadway Elt 2-Pump' },
+{ id: 'microsilk', name: 'MicroSilk', price: 1025, unavailableOn: ['MONA-ELT'], excludes: ['2-pump'], note: 'Not available on Monaco Elt or Broadway Elt 2-Pump' },
     { id: 'microsilk-freeze', name: 'MicroSilk Freeze Sensor', price: 75, requires: 'microsilk' },
   ],
   steps: [
