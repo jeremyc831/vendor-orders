@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { TravisPartsQueue } from '@/types/travis';
 
 interface Props {
@@ -20,6 +20,29 @@ export default function TravisPartsQueueCard({ queue, onQueueChange, onSubmitted
 
   const subtotal = queue.lineItems.reduce((sum, li) => sum + li.priceAtAdd * li.qty, 0);
   const itemCount = queue.lineItems.reduce((sum, li) => sum + li.qty, 0);
+
+  // The PO suffix is persisted server-side (the Thursday cron reads it from KV),
+  // but the input must NOT be bound directly to that server state. Doing so made
+  // every keystroke await a PATCH round-trip while `setBusy` re-rendered the
+  // field back to the stale value — wiping what you typed ("one char at a time").
+  // Instead: type into local `suffixDraft` (instant), and debounce-persist.
+  const persistedSuffix = queue.suffixOverride ?? '';
+  const [suffixDraft, setSuffixDraft] = useState(persistedSuffix);
+
+  // Reflect externally-driven changes (initial queue load, submit/clear) into the
+  // draft. No-op while editing, since after a save the persisted value === draft.
+  useEffect(() => {
+    setSuffixDraft(persistedSuffix);
+  }, [persistedSuffix]);
+
+  // Persist the draft a short beat after the user stops typing.
+  useEffect(() => {
+    if (suffixDraft === persistedSuffix) return;
+    const t = setTimeout(() => { void handleSuffixChange(suffixDraft); }, 500);
+    return () => clearTimeout(t);
+    // handleSuffixChange is a stable hoisted declaration; re-run only on edits.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [suffixDraft, persistedSuffix]);
 
   async function patch(body: Record<string, unknown>) {
     setBusy(true);
@@ -125,8 +148,9 @@ export default function TravisPartsQueueCard({ queue, onQueueChange, onSubmitted
         </label>
         <input
           type="text"
-          value={queue.suffixOverride ?? ''}
-          onChange={e => handleSuffixChange(e.target.value)}
+          value={suffixDraft}
+          onChange={e => setSuffixDraft(e.target.value)}
+          onBlur={() => { if (suffixDraft !== persistedSuffix) void handleSuffixChange(suffixDraft); }}
           placeholder="Stock"
           className="w-48 bg-input-bg border border-input-border rounded px-3 py-1.5 text-sm text-white font-mono focus:border-brand focus:outline-none"
         />
