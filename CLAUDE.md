@@ -113,7 +113,22 @@ AUTH_USERNAME=jeremy
 AUTH_PASSWORD=hibernation2026
 GMAIL_USER=<gmail address>
 GMAIL_APP_PASSWORD=<gmail app password>
+
+# Travis Parts queue (Vercel KV) + weekly cron/sync — required in Vercel for prod
+KV_REST_API_URL=<vercel kv url>
+KV_REST_API_TOKEN=<vercel kv token>
+CRON_SECRET=<random string, e.g. `openssl rand -hex 32`>   # Thursday parts-submit/reminder crons
+GITHUB_SYNC_TOKEN=<random string>                          # Sunday GH Actions manual-parts sync (same value in Vercel + GitHub repo secret)
+APP_URL=https://orders.hibernation.com                     # used in reminder-email deep links + GH Actions
 ```
+
+> **Vercel cron gotcha:** The Thursday Travis parts cron (`/api/travis/parts-submit`)
+> and reminder (`/api/travis/parts-reminder`) authenticate via `Authorization: Bearer $CRON_SECRET`.
+> Vercel only sends that header when `CRON_SECRET` is set in the project's env, and the
+> handler **fails closed** (returns 401) if it's missing. So `CRON_SECRET` MUST be set in
+> Vercel → Settings → Environment Variables (Production) **and the project redeployed** —
+> otherwise every Thursday cron fails with a 401 in the Vercel dashboard. Env-var changes
+> only take effect on a new deployment.
 
 ## Common Tasks
 
