@@ -156,5 +156,5 @@ anchors, Cost column for sub-items). Classification overrides live in
 
 ## Known Issues / Notes
 - Dropbox syncing can cause EPERM errors on `.next/` folder. Fix: stop server, delete `.next`, restart.
-- The `proxy.ts` at project root is the Next.js 16 convention (renamed from middleware.ts). There's also a `src/middleware.ts` that works with the current setup.
+- Auth middleware lives in a single file: `src/proxy.ts` (Next.js 16 renamed the `middleware` convention to `proxy`; the file sits beside `src/app`). It bypasses `/login`, `/api/auth`, and the Bearer-protected Travis cron/sync routes; other `/api/*` routes return a 401 JSON when unauthenticated (NOT a redirect — redirecting an API POST to the static `/login` page caused a 307→405), while page navigations redirect to `/login`. Do not re-add a root `proxy.ts` or `src/middleware.ts` — with the app under `src/`, only `src/proxy.ts` is loaded.
 - Sundance models have msrp: 0 (not tracked). Marquis MSRP is in the data but NOT shown in the UI (dealer-only pricing).
