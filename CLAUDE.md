@@ -1,160 +1,144 @@
 @AGENTS.md
 
-# Spa Orders - Internal Ordering System
+# The Order Desk — Hibernation Stoves & Spas
 
-## Overview
-Internal web app for Hibernation Stoves & Spas (Angels Camp, CA) to order spas from two manufacturers: **Marquis** (dealer #101099) and **Sundance** (dealer #1805). Replaces paper PDF order forms with a modern web form that calculates pricing, generates downloadable PDFs, and emails orders.
+Internal ops tool for a small crew (owner + 2–3) in Angels Camp, CA. Vendor ordering
+(spas, stoves, parts, supplies) plus the Playbook (SOP library + mistake log).
+Deployed on Vercel at orders.hibernation.com.
 
-## Tech Stack
-- **Next.js 16.2.2** (App Router) with TypeScript
-- **Tailwind CSS v4** with dark theme (slate-900 bg, slate-800 cards, brand blue #1565A6)
-- **jsPDF + jspdf-autotable** for server-side PDF generation
-- **Nodemailer** (Gmail SMTP) for email sending
-- **Cookie-based auth** via middleware (NOT NextAuth)
-- **No database** - all manufacturer/model data as TypeScript constants
-- Deploy target: Vercel at orders.hibernation.com
+## Commands
 
-## Project Structure
-```
-spa-orders/
-  src/
-    app/
-      page.tsx              # Main order form (single page, all logic)
-      login/page.tsx        # Login page
-      layout.tsx            # Root layout with dark theme
-      globals.css           # CSS variables and Tailwind config
-      api/
-        auth/route.ts       # POST login, DELETE logout
-        generate-pdf/route.ts  # PDF download endpoint
-        send-order/route.ts    # Email order via Gmail SMTP
-    types/
-      manufacturer.ts       # Core types: SpaModel, Series, OptionDef, CoverDef, etc.
-      order.ts              # OrderLineItem, Order interfaces
-    data/
-      index.ts              # Exports all series, getSeriesForManufacturer(), findSeries()
-      dealer.ts             # Default dealer info for both manufacturers, freight defaults
-      marquis/
-        shared.ts           # Shell colors (6), covers (vinyl + WeatherShield)
-        celebrity.ts        # 6 models, Ash/Pecan cabinets
-        elite.ts            # 6 models, Granite/Hickory/Harbor cabinets
-        vector21.ts         # 6 models, Barnwood/Chestnut cabinets
-        crown.ts            # 7 models, Granite/Timber cabinets (all 240V)
-      sundance/
-        shared.ts           # Shell colors with upcharges, covers for 780/880 and 980
-        series980.ts        # 2 models, Coastal/Mahogany cabinets
-        series880.ts        # 7 models, Windy Oak/Ironwood/Flint Gray cabinets
-        series780.ts        # 5 models, Modern Hardwood/Brushed Gray/Vintage Oak cabinets
-        series680.ts        # 5 models, Slate/Graphite cabinets
-    lib/
-      pricing.ts            # Price calculation, option availability, formatting
-      pdf.ts                # PDF generation with jsPDF
-  middleware.ts             # Cookie-based auth middleware (also proxy.ts at root)
-```
+- `npm run dev` / `npm run build` / `npm start`
+- `npm test` — vitest, node env; tests live in `src/**/__tests__/`
+- `npm run lint` — eslint 9 flat config (2 pre-existing unused-var warnings are known)
+- `npm run import:marquis` / `import:tf` / `import:travis` — Python scripts that regenerate
+  catalog constants in `src/data/` from the pricing PDFs/CSVs in `docs/`. Travis uses Tier 4
+  pricing; classification overrides live in `scripts/import-travis-overrides.json`.
 
-## Key Architecture Decisions
+Run lint + test before committing. There is no CI on push; the Vercel build is the gate.
 
-### Data Model
-All spa data is declarative TypeScript constants. The `OptionDef` type drives conditional logic:
-- `availableOn?: string[]` - only show for these model IDs
-- `unavailableOn?: string[]` - hide for these model IDs
-- `requires?: string` - requires another option to be selected first
-- `excludes?: string[]` - mutually exclusive with these options
-- `includedByDefault?: boolean` - pre-checked and $0 (e.g., SmartTub on Sundance 780+, DuraBase on Crown)
+## Architecture facts you can't derive at a glance
 
-### Covers
-- `isDefault?: boolean` on CoverDef - but cover is NOT auto-selected in the UI (user must explicitly choose)
-- Marquis: Black Vinyl ($0) or WeatherShield Upgrade ($100)
-- Sundance 680/780/880: SUNSTRONG ($0) or Extreme ($98)
-- Sundance 980: SUNSTRONG ($0) or Extreme ($0, free upgrade)
-
-### Voltage Tags
-Models with `voltage: 'both'` show a yellow "120V/240V" tag. These default to 120V but can be upgraded to 240V:
-- Celebrity: Broadway, Monaco, Nashville
-- Elite: Monaco Elite, Nashville Elite
-- Vector21: V65L
-- Sundance 780: Dover
-- Sundance 680: Prado, Alicia
-- Crown: ALL are 240V standard (no tag, no upgrade option)
-
-### Lounge Tags
-Models with `hasLounge: true` show "(Lounge)" tag. Can also be `'double'` for double-lounge models.
-
-### Pricing
-- One spa per order/PO
-- Always EFT/prepay payment
-- Marquis gets 2% EFT discount on spa cost (before freight)
-- Sundance has no discount
-- Default freight: $300 Marquis, $550 Sundance (editable)
-- Sundance shell colors may have upcharges
-
-### UI Layout
-Single-page form with two-column layout:
-- **Left column**: Model selection + Spa Options (with "No Additional Options" button)
-- **Right column**: Shell Color + Cabinet Color + Cover + Steps & Benches (with "No Steps" button)
-- All sections require explicit selection before PDF can be generated
-- Selected items get amber/yellow border + yellow price text
-- Unselected items show prices in brand-light blue
-
-### PDF & Email
-- PDF: PO # appears both in header (top-right) and as first row of dealer info table
-- Both PDF and email include: "Please send order confirmations to: info@hibernation.com and jeremy@hibernation.com"
-- Email sends via Gmail SMTP (nodemailer) with PDF attachment
-- PO# format: MMDDYYLASTNAME (auto-generated from order date + last name)
+- **No SQL database and no migration system.** Two kinds of state:
+  - **Catalogs** (spa models, options, covers, Travis products, accessories) are TypeScript
+    constants under `src/data/`, edited by hand or regenerated by the import scripts.
+  - **Mutable state** lives in Vercel KV (Upstash) behind small per-feature libs in `src/lib/`,
+    each with the same pattern: `hasKV()` env check + dynamic `import('@vercel/kv')` + in-memory
+    fallback so local dev works with no KV creds (state resets on dev-server restart).
+    Key namespaces: `order:{id}` + `orders:all` (order history, `kv.ts`), `travis-parts-queue`
+    (`travis-queue.ts`), `travis-parts-manual-pending` (`travis-manual-parts.ts`),
+    `products:{vendorId}` (`products-kv.ts`), `playbook:*` (`playbook-store.ts`).
+- **Pages are client components** (`'use client'`) that fetch JSON from `/api/*` route handlers
+  on mount. No server-component data fetching, no server actions — follow this pattern.
+- **Validation is manual** in route handlers (typeof checks, 400 on bad input). `zod`,
+  `react-hook-form`, `@hookform/resolvers`, `next-auth`, `resend`, and `@react-pdf/renderer`
+  are in package.json but **unused** — do not build on them without discussing removal first.
+- **PDFs** are generated server-side with jsPDF + jspdf-autotable (`src/lib/pdf.ts`,
+  `travis-pdf.ts`). **Email** goes out via nodemailer + Gmail SMTP.
 
 ## Auth
-- Simple cookie-based auth, NOT NextAuth
-- Credentials in `.env.local`: AUTH_USERNAME=jeremy, AUTH_PASSWORD=hibernation2026
-- Cookie: `spa-orders-auth=authenticated`, httpOnly, 7-day expiry
-- Middleware redirects unauthenticated users to /login
 
-## Environment Variables
+- Cookie-based, single shared login from env (`AUTH_USERNAME`/`AUTH_PASSWORD`).
+  Cookie `spa-orders-auth=authenticated`, httpOnly, 7-day expiry. NOT NextAuth.
+- Lives in **exactly one file: `src/proxy.ts`** (Next 16 renamed `middleware` → `proxy`; with
+  the app under `src/`, only `src/proxy.ts` is loaded). Never add a root `proxy.ts` or any
+  `middleware.ts` — a duplicate silently takes over routing.
+- Unauthenticated **API** requests get 401 JSON, not a redirect (redirecting a POST to the
+  static login page caused a 307 → 405 bug). Page navigations redirect to `/login`.
+- Bypass list in `proxy.ts`: `/login`, `/api/auth`, and the Travis cron/sync endpoints, which
+  authenticate inside the handler via `Authorization: Bearer` (`CRON_SECRET` or
+  `GITHUB_SYNC_TOKEN`). New pages/APIs are protected automatically — add a bypass only for
+  externally-triggered endpoints.
+
+## Modules
+
+- **Spa orders** (`/`, Marquis dealer #101099, Sundance #1805): one spa per PO, always
+  EFT/prepay. Marquis gets a 2% EFT discount on spa cost before freight; Sundance none.
+  Default freight $300 Marquis / $550 Sundance, editable. Sundance shell colors can carry
+  upcharges; Sundance `msrp: 0` (not tracked) and Marquis MSRP is never shown in the UI.
+  Spa PO format: `MMDDYYLASTNAME` (`generatePO` in `src/lib/pricing.ts`).
+  Option conditionality is data-driven via `OptionDef` fields (`availableOn`, `unavailableOn`,
+  `requires`, `excludes`, `includedByDefault`) — see `src/types/manufacturer.ts`.
+  UI rule: every section needs an explicit selection (covers are never auto-picked even when
+  `isDefault`); selected items get amber border + yellow price, unselected prices are brand-light.
+- **Supplies/accessories** (`src/data/accessories/`): Marquis + Total Fireplace vendors,
+  custom per-vendor products stored in KV.
+- **Travis Industries** (`/travis/stoves`, `/travis/parts`, dealer #CA419): stoves order form,
+  plus a weekly parts queue — items accumulate in KV and a Vercel cron auto-submits Thursdays
+  (reminder 19:00 UTC, submit 20:00 UTC; see `vercel.json`). Travis PO: `MMDDYY` + suffix
+  (`src/lib/travis-po.ts`). A Sunday GitHub Action (`.github/workflows/`) pulls manually-added
+  parts from prod and commits them into `src/data/travis/parts-manual.ts`.
+- **Order history**: every sent order is stored in KV and listed on the home screen with
+  status tracking (`submitted → confirmed → shipped → delivered`).
+- **Playbook** (`/playbook`): SOP library + mistake log. See below.
+- **PDF/email convention**: PO # appears in the PDF header top-right AND as the first dealer-info
+  row; both PDF and email include "Please send order confirmations to: info@hibernation.com and
+  jeremy@hibernation.com".
+
+## Playbook module
+
+SOP library fed by a mistake log (every field error should become a checklist line).
+Per-visit job checklists live in Jobber — this app is the reference library, not job execution.
+
+- **Data**: types in `src/types/playbook.ts`; store in `src/lib/playbook-store.ts` (KV keys
+  `playbook:sop-ids`, `playbook:sop:{id}`, `playbook:sop-revisions:{id}`, `playbook:mistakes`,
+  `playbook:seeded`); pure helpers in `src/lib/playbook.ts`; seed content in
+  `src/lib/playbook-seed.ts`.
+- **Seeding = the "migration"**: first `GET /api/playbook/sops` (or `/mistakes`) after deploy
+  claims an NX flag and writes the TEMPLATE draft + "Close out a job" SOP + 3 starter mistakes.
+  Idempotent; nothing else to run.
+- **Versioning**: every create/edit/restore bumps `version` and appends a full-snapshot revision
+  (capped at 50/SOP) — that's the safety net that lets everyone edit. Editing also refreshes
+  `lastReviewedAt`; "Mark reviewed" bumps only the date (no version). SOPs go stale after
+  90 days unreviewed.
+- **Slugs are immutable** after create (printed QR cards encode `/playbook/{slug}`), de-duped
+  with `-2` suffixes. `GET /api/playbook/sops/[id]` accepts id **or** slug.
+- **Mistakes**: `open → converted | dismissed`. Convert prefills a new-SOP draft
+  (`/playbook/new?mistake={id}`) and links on save; Attach links to an existing SOP (optionally
+  appending a step, which is a real versioned edit). Linked mistakes render as the SOP's
+  "Common mistakes" section. Reopening unlinks.
+- **Print views**: `/playbook/{slug}/print` (one-page laminate) and `/card` (5×3 QR card) are
+  intentionally light-themed. QR SVGs come from `/api/playbook/qr/{slug}` (qrcode pkg), which
+  encodes `APP_URL` + slug (falls back to request origin in dev).
+- **Attribution**: one shared login, so "your name" on edits/mistakes is self-declared and
+  persisted in localStorage via `useStoredName` (`useSyncExternalStore` — don't regress to a
+  setState-in-effect, the lint rule blocks it).
+- Design constraints: mobile-first, big tap targets, small payloads (bad cell coverage in the
+  foothills). No service worker yet, but don't preclude one (v2: offline SOP cache, Jobber API
+  links, voice-memo → draft SOP via Anthropic API).
+
+## Environment variables
+
 ```
-AUTH_USERNAME=jeremy
-AUTH_PASSWORD=hibernation2026
-GMAIL_USER=<gmail address>
-GMAIL_APP_PASSWORD=<gmail app password>
-
-# Travis Parts queue (Vercel KV) + weekly cron/sync — required in Vercel for prod
-KV_REST_API_URL=<vercel kv url>
-KV_REST_API_TOKEN=<vercel kv token>
-CRON_SECRET=<random string, e.g. `openssl rand -hex 32`>   # Thursday parts-submit/reminder crons
-GITHUB_SYNC_TOKEN=<random string>                          # Sunday GH Actions manual-parts sync (same value in Vercel + GitHub repo secret)
-APP_URL=https://orders.hibernation.com                     # used in reminder-email deep links + GH Actions
+AUTH_USERNAME / AUTH_PASSWORD          # login
+GMAIL_USER / GMAIL_APP_PASSWORD        # nodemailer SMTP
+KV_REST_API_URL / KV_REST_API_TOKEN    # Vercel KV — required in prod (unset = memory fallback)
+CRON_SECRET                            # Thursday Travis crons (Bearer auth)
+GITHUB_SYNC_TOKEN                      # Sunday GH Actions manual-parts sync (same value both sides)
+APP_URL=https://orders.hibernation.com # reminder-email deep links + Playbook QR codes
 ```
 
-> **Vercel cron gotcha:** The Thursday Travis parts cron (`/api/travis/parts-submit`)
-> and reminder (`/api/travis/parts-reminder`) authenticate via `Authorization: Bearer $CRON_SECRET`.
-> Vercel only sends that header when `CRON_SECRET` is set in the project's env, and the
-> handler **fails closed** (returns 401) if it's missing. So `CRON_SECRET` MUST be set in
-> Vercel → Settings → Environment Variables (Production) **and the project redeployed** —
-> otherwise every Thursday cron fails with a 401 in the Vercel dashboard. Env-var changes
-> only take effect on a new deployment.
+> **Vercel cron gotcha:** Vercel only sends `Authorization: Bearer $CRON_SECRET` when
+> `CRON_SECRET` is set in the project's env, and the cron handlers fail closed (401) without it.
+> Env-var changes only take effect on a **new deployment** — set the var AND redeploy, or every
+> Thursday cron 401s.
 
-## Common Tasks
+## Gotchas
 
-### Adding a new spa model
-1. Edit the appropriate series file in `src/data/marquis/` or `src/data/sundance/`
-2. Add to the `models` array with: id, name, dealerCost, msrp, voltage (if 120V capable), hasLounge (if applicable)
+- Dropbox syncing the repo can cause EPERM on `.next/` — stop the dev server, delete `.next`,
+  restart.
+- Date-only strings (`YYYY-MM-DD`) must be formatted timezone-safely — use `formatDate` /
+  `todayYMD` from `src/lib/playbook.ts` rather than `new Date(str).toLocaleDateString()`.
+- Local dev without KV creds seeds/stores everything in memory per process — "missing" data
+  after a restart is expected, not a bug.
 
-### Adding a new option
-Add to the `options` array in the series file with appropriate conditional fields (availableOn, requires, excludes, etc.)
+## Common tasks
 
-### Adding a new series
-1. Create a new file in `src/data/marquis/` or `src/data/sundance/`
-2. Export the series constant
-3. Import and add to the array in `src/data/index.ts`
-
-### Importing the Travis Industries catalog
-Re-run after the 2026 dealer-cost PDF is updated in `docs/`:
-```bash
-npm run import:travis
-```
-Outputs: `src/data/travis/stoves.ts` (anchor products) and `src/data/travis/parts.ts`
-(log sets, conversion kits, accessories). Uses Tier 4 pricing (50% column for
-anchors, Cost column for sub-items). Classification overrides live in
-`scripts/import-travis-overrides.json`.
-
-## Known Issues / Notes
-- Dropbox syncing can cause EPERM errors on `.next/` folder. Fix: stop server, delete `.next`, restart.
-- Auth middleware lives in a single file: `src/proxy.ts` (Next.js 16 renamed the `middleware` convention to `proxy`; the file sits beside `src/app`). It bypasses `/login`, `/api/auth`, and the Bearer-protected Travis cron/sync routes; other `/api/*` routes return a 401 JSON when unauthenticated (NOT a redirect — redirecting an API POST to the static `/login` page caused a 307→405), while page navigations redirect to `/login`. Do not re-add a root `proxy.ts` or `src/middleware.ts` — with the app under `src/`, only `src/proxy.ts` is loaded.
-- Sundance models have msrp: 0 (not tracked). Marquis MSRP is in the data but NOT shown in the UI (dealer-only pricing).
+- **New spa model/option/series**: edit or add the series file in `src/data/marquis/` or
+  `src/data/sundance/` (new series also gets registered in `src/data/index.ts`). Models with
+  `voltage: 'both'` show the 120V/240V tag; `hasLounge: true | 'double'` shows lounge tags;
+  Crown is all-240V by design (no tag, no upgrade).
+- **Travis catalog refresh**: drop the new dealer-cost PDF in `docs/`, run `npm run import:travis`.
+- **New KV-backed feature**: copy the `hasKV()` + memory-fallback pattern from
+  `src/lib/travis-queue.ts`, namespace your keys, and mock `@vercel/kv` in tests like
+  `src/lib/__tests__/playbook-store.test.ts`.
