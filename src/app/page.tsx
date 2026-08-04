@@ -504,6 +504,33 @@ export default function OrderPage() {
           </section>
         )}
 
+        {/* Playbook — home screen */}
+        {!manufacturer && !selectedAccessoryVendor && (
+          <section>
+            <h2 className="text-lg font-semibold text-white mb-4">Playbook</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => router.push('/playbook')}
+                className="p-6 rounded-lg border-2 border-card-border bg-card text-slate-300 hover:border-slate-500 transition text-center"
+              >
+                <div className="text-2xl font-bold">SOPs</div>
+                <div className="text-sm text-slate-400 mt-1">
+                  One-page how-tos &middot; videos &middot; QR cards
+                </div>
+              </button>
+              <button
+                onClick={() => router.push('/playbook/mistakes')}
+                className="p-6 rounded-lg border-2 border-amber-500/40 bg-amber-500/10 text-amber-300 hover:border-amber-400 transition text-center"
+              >
+                <div className="text-2xl font-bold">Log a Mistake</div>
+                <div className="text-sm text-amber-200/70 mt-1">
+                  30 seconds &middot; feeds the playbook
+                </div>
+              </button>
+            </div>
+          </section>
+        )}
+
         {/* Accessories Order Form */}
         {selectedAccessoryVendor && (
           <AccessoryOrderForm
